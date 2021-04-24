@@ -51,6 +51,7 @@ def Athor():
         return True
     return False
 
+
 def command_new():
     if question == 'новый' or question == 'н':
         v1 = input('новый вопрос: ')
