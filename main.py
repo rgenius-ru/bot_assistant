@@ -1,5 +1,6 @@
 import json
 import random
+import sys
 
 # Список случайных ответов, если бот не знает что ответить
 notUnderstandList = [
@@ -23,10 +24,8 @@ with open('datafile') as f:
     main_list = json.load(f)
     f.close()
 
-# Бесконечный цикл
-while 1:
-    question = input()
 
+def command_help():
     if question == 'помощь' or question == 'п':
         print('---------------------------------------------------')
         print('новый (коротко: н) - запись в базу нового вопроса и ответа.')
@@ -34,8 +33,11 @@ while 1:
         print('выход (коротко: в) - обновление базы и выход из программы.')
         print('---------------------------------------------------')
         print()
-        continue
+        return True
+    return False
 
+
+def command_new():
     if question == 'новый' or question == 'н':
         v1 = input('новый вопрос: ')
         v2 = input('      ответ : ')
@@ -48,16 +50,22 @@ while 1:
                       ensure_ascii=False)
 
         print()
-        continue
+        return True
+    return False
 
+
+def command_all():
     if question == 'все вопросы' or question == 'все':
         print()
         for question_answer in main_list:
             print(question_answer)
             print(main_list[question_answer])
             print()
-        continue
+        return True
+    return False
 
+
+def command_exit():
     if question == 'выход' or question == 'в':
         print('записываем в блокнотик и..')
 
@@ -68,17 +76,41 @@ while 1:
             print('уходим')
             f.close()
 
-        break
+        sys.exit(0)
 
-    if question == 'рандом' or question == 'р':
+
+def command_random(_question):
+    if _question == 'рандом' or _question == 'р':
         for x in range(5):
-            question, answer = random.choice(list(main_list.items()))
-            print(question, ':', answer)
-        continue
+            _question, answer = random.choice(list(main_list.items()))
+            print(_question, ':', answer)
+        return True
+    return False
 
+
+def question_answer():
     if question in main_list:
         print(main_list[question])
         print()
-    else:
+        return True
+    return False
+
+
+def i_dont_know():
+    if not is_command_in_base:
         print(random.choice(notUnderstandList))
         print()
+
+
+# Бесконечный цикл
+is_command_in_base = False
+while 1:
+    question = input()
+
+    is_command_in_base = command_help()
+    is_command_in_base = command_new()
+    is_command_in_base = command_all()
+    is_command_in_base = command_random(question)
+    command_exit()
+
+    question_answer()
