@@ -25,16 +25,27 @@ with open('datafile') as f:
     f.close()
 
 
-def command_weather():
-    if question == 'какая погода в Воронеже?' or question == 'погода':
+def command_help():
+    if question == 'помощь' or question == 'п':
         print('---------------------------------------------------')
-        print("В Воронеже сейчас 8 градусов,")
-        print("Облачно с прояснениями, ощущается как -2 градуса.")
+        print('новый (коротко: н) - запись в базу нового вопроса и ответа.')
+        print('все вопросы (коротко: все) - вывод всех вопросов и ответов.')
+        print('выход (коротко: в) - обновление базы и выход из программы.')
         print('---------------------------------------------------')
         print()
         return True
     return False
 
+def clon_help():
+    if question == 'Копия с гитхаб' or question == 'Копия':
+        print('---------------------------------------------------')
+        print('Для начала нажми на Git')
+        print('Если это новый файл то нажми get from version control')
+        print('Если старый нажми clon')
+        print('---------------------------------------------------')
+        print()
+        return True
+    return False
 
 def command_new():
     if question == 'новый' or question == 'н':
@@ -106,7 +117,7 @@ is_command_in_base = False
 while 1:
     question = input()
 
-    is_command_in_base = command_weather()
+    is_command_in_base = command_help()
     is_command_in_base = command_new()
     is_command_in_base = command_all()
     is_command_in_base = command_random(question)

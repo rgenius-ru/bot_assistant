@@ -24,12 +24,12 @@ with open('datafile') as f:
     main_list = json.load(f)
     f.close()
 
-
-def command_weather():
-    if question == 'какая погода в Воронеже?' or question == 'погода':
+def command_help():
+    if question == 'помощь' or question == 'п':
         print('---------------------------------------------------')
-        print("В Воронеже сейчас 8 градусов,")
-        print("Облачно с прояснениями, ощущается как -2 градуса.")
+        print('новый (коротко: н) - запись в базу нового вопроса и ответа.')
+        print('все вопросы (коротко: все) - вывод всех вопросов и ответов.')
+        print('выход (коротко: в) - обновление базы и выход из программы.')
         print('---------------------------------------------------')
         print()
         return True
@@ -100,13 +100,23 @@ def i_dont_know():
         print(random.choice(notUnderstandList))
         print()
 
+def command_r_number():
+    if question == 'roll' or question == 'r':
+        print('---------------------------------------------------')
+        print('Введите тип ролла')
+        print('Введите ставку')
+        print('---------------------------------------------------')
+        return True
+    return False
+
+
 
 # Бесконечный цикл
 is_command_in_base = False
 while 1:
     question = input()
-
-    is_command_in_base = command_weather()
+    is_command_in_base = command_r_number()
+    is_command_in_base = command_help()
     is_command_in_base = command_new()
     is_command_in_base = command_all()
     is_command_in_base = command_random(question)

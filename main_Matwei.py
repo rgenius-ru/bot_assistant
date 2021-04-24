@@ -25,11 +25,24 @@ with open('datafile') as f:
     f.close()
 
 
-def command_weather():
-    if question == 'какая погода в Воронеже?' or question == 'погода':
+def command_Pomoch():
+    if question == 'Техподдержка' or question == 'тех':
         print('---------------------------------------------------')
-        print("В Воронеже сейчас 8 градусов,")
-        print("Облачно с прояснениями, ощущается как -2 градуса.")
+        print('Этот раздел предназначен для того что бы вы могли связатся с нами если вы нашли какой-то баг или бот отключился.')
+        print('Для связи с нами в нужно написать к нам на почту с пометкой бот examplemail@yandex.ru.')
+        print('Или можете написать нам в дсикорд バーシック#8451 rgenius#1118 и так далее .')
+        print('---------------------------------------------------')
+        print()
+        return True
+    return False
+
+
+def command_help():
+    if question == 'помощь' or question == 'п':
+        print('---------------------------------------------------')
+        print('новый (коротко: н) - запись в базу нового вопроса и ответа.')
+        print('все вопросы (коротко: все) - вывод всех вопросов и ответов.')
+        print('выход (коротко: в) - обновление базы и выход из программы.')
         print('---------------------------------------------------')
         print()
         return True
@@ -106,10 +119,11 @@ is_command_in_base = False
 while 1:
     question = input()
 
-    is_command_in_base = command_weather()
+    is_command_in_base = command_help()
     is_command_in_base = command_new()
     is_command_in_base = command_all()
     is_command_in_base = command_random(question)
+    is_command_in_base = command_Pomoch()
     command_exit()
 
     question_answer()
