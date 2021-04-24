@@ -25,9 +25,9 @@ with open('datafile') as f:
 
 # Бесконечный цикл
 while 1:
-    vopros = input()
+    question = input()
 
-    if vopros == 'помощь' or vopros == 'п':
+    if question == 'помощь' or question == 'п':
         print('---------------------------------------------------')
         print('новый (коротко: н) - запись в базу нового вопроса и ответа.')
         print('все вопросы (коротко: все) - вывод всех вопросов и ответов.')
@@ -36,7 +36,7 @@ while 1:
         print()
         continue
 
-    if vopros == 'новый' or vopros == 'н':
+    if question == 'новый' or question == 'н':
         v1 = input('новый вопрос: ')
         v2 = input('      ответ : ')
         main_list[v1] = v2
@@ -50,15 +50,15 @@ while 1:
         print()
         continue
 
-    if vopros == 'все вопросы' or vopros == 'все':
+    if question == 'все вопросы' or question == 'все':
         print()
-        for vopros_otvet in main_list:
-            print(vopros_otvet)
-            print(main_list[vopros_otvet])
+        for question_answer in main_list:
+            print(question_answer)
+            print(main_list[question_answer])
             print()
         continue
 
-    if vopros == 'выход' or vopros == 'в':
+    if question == 'выход' or question == 'в':
         print('записываем в блокнотик и..')
 
         with open('datafile', 'w') as f:
@@ -70,14 +70,14 @@ while 1:
 
         break
 
-    if vopros == 'рандом' or vopros == 'р':
+    if question == 'рандом' or question == 'р':
         for x in range(5):
-            vopros, otvet = random.choice(list(main_list.items()))
-            print(vopros, ':', otvet)
+            question, answer = random.choice(list(main_list.items()))
+            print(question, ':', answer)
         continue
 
-    if vopros in main_list:
-        print(main_list[vopros])
+    if question in main_list:
+        print(main_list[question])
         print()
     else:
         print(random.choice(notUnderstandList))
