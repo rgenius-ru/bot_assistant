@@ -79,7 +79,7 @@ def command_exit():
         sys.exit(0)
 
 def zaglushka():
-    print("prosto_ nichego")
+    print("prosto _ nichego")
 
 def anime():
     if question == 'аниме' or question == 'а':
