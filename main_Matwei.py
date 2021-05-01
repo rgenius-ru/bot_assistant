@@ -37,10 +37,10 @@ def command_Pomoch():
     return False
 
 
-def command_dontpunchme228():
+def command_lisa():
     if question == 'Кицунэ' or question == 'Киц':
         print('---------------------------------------------------')
-        print('Кицунэ японское название лисицы. В Японии существуют два подвида лисиц: японская рыжая лисица (хондо)')
+        print('Кицунэ японское название лисицы. В Японии существуют два подвида лисиц: японская рыжая лисица (хондо кицунэ)')
         print('обитающая на Хонсю; и лисица Хоккайдо(кита кицунэ) обитающая на Хоккайдо')
         print('---------------------------------------------------')
         print('---------------------------------------------------')
@@ -136,7 +136,7 @@ while 1:
     is_command_in_base = command_all()
     is_command_in_base = command_random(question)
     is_command_in_base = command_Pomoch()
-    is_command_in_base = command_dontpunchme228()
+    is_command_in_base = command_lisa()
     command_exit()
 
     question_answer()
