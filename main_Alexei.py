@@ -37,11 +37,22 @@ def command_help():
     return False
 
 def clon_help():
-    if question == 'Копия с гитхаб' or question == 'Копия':
+    if question == 'копия с гитхаб' or question == 'копия':
         print('---------------------------------------------------')
         print('Для начала нажми на Git')
         print('Если это новый файл то нажми get from version control')
         print('Если старый нажми clon')
+        print('---------------------------------------------------')
+        print()
+        return True
+    return False
+def square():
+    if question == 'возвести в квадрат' or question == 'квадрат':
+        print('---------------------------------------------------')
+        print('впишите число необходимое возвести в квадрат')
+        a=int(input())
+        b=a*a
+        print('ответ:',int(b))
         print('---------------------------------------------------')
         print()
         return True
@@ -116,7 +127,8 @@ def i_dont_know():
 is_command_in_base = False
 while 1:
     question = input()
-
+    is_command_in_base = square()
+    is_command_in_base = clon_help()
     is_command_in_base = command_help()
     is_command_in_base = command_new()
     is_command_in_base = command_all()
