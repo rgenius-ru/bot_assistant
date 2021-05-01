@@ -20,7 +20,7 @@ print('---------------------------------------------------')
 print()
 
 # Чтение файла с вопросами и ответами
-with open('datafile') as f:
+with open('../datafile') as f:
     main_list = json.load(f)
     f.close()
 
@@ -36,21 +36,6 @@ def command_help():
         return True
     return False
 
-def Athor():
-    if question == 'Автроры' or question == 'а':
-        print('---------------------------------------------------')
-        print('Сергей')
-        print('Матвей')
-        print('Артем')
-        print('Саша Г.')
-        print('Саша Р.')
-        print('Степан')
-        print('Лёша')
-        print('---------------------------------------------------')
-        print()
-        return True
-    return False
-
 
 def command_new():
     if question == 'новый' or question == 'н':
@@ -58,7 +43,7 @@ def command_new():
         v2 = input('      ответ : ')
         main_list[v1] = v2
 
-        with open('datafile', 'w') as f:
+        with open('../datafile', 'w') as f:
             f.seek(0)
             f.truncate(0)
             json.dump(main_list, f, sort_keys=True, indent=4,
@@ -84,7 +69,7 @@ def command_exit():
     if question == 'выход' or question == 'в':
         print('записываем в блокнотик и..')
 
-        with open('datafile', 'w') as f:
+        with open('../datafile', 'w') as f:
             f.truncate(0)
             json.dump(main_list, f, sort_keys=True, indent=4,
                       ensure_ascii=False)
@@ -92,6 +77,18 @@ def command_exit():
             f.close()
 
         sys.exit(0)
+
+
+def anime():
+    if question == 'аниме' or question == 'а':
+        print('---------------------------------------------------')
+        print('быстрая смена кадров с ноложенным поверх звуком, и определённым стилем рисовки')
+        print('в основном делается на основе чёрно-белых комиксов(манги)')
+        print('имеется на разные вкусы и на все возроста')
+        print('---------------------------------------------------')
+        print()
+        return True
+    return False
 
 
 def command_random(_question):
@@ -121,11 +118,12 @@ def i_dont_know():
 is_command_in_base = False
 while 1:
     question = input()
-    is_command_in_base = Athor()
+
     is_command_in_base = command_help()
     is_command_in_base = command_new()
     is_command_in_base = command_all()
     is_command_in_base = command_random(question)
     command_exit()
+    is_command_in_base = anime()
 
     question_answer()
