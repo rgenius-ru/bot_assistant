@@ -37,6 +37,17 @@ def command_Pomoch():
     return False
 
 
+def command_dontpunchme228():
+    if question == 'Кицунэ' or question == 'Киц':
+        print('---------------------------------------------------')
+        print('Кицунэ японское название лисицы. В Японии существуют два подвида лисиц: японская рыжая лисица (хондо)')
+        print('обитающая на Хонсю; и лисица Хоккайдо(кита кицунэ) обитающая на Хоккайдо')
+        print('---------------------------------------------------')
+        print('---------------------------------------------------')
+        print()
+        return True
+    return False
+
 def command_help():
     if question == 'помощь' or question == 'п':
         print('---------------------------------------------------')
@@ -75,6 +86,7 @@ def command_all():
             print()
         return True
     return False
+
 
 
 def command_exit():
@@ -124,6 +136,7 @@ while 1:
     is_command_in_base = command_all()
     is_command_in_base = command_random(question)
     is_command_in_base = command_Pomoch()
+    is_command_in_base = command_dontpunchme228()
     command_exit()
 
     question_answer()

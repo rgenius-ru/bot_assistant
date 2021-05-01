@@ -36,6 +36,16 @@ def command_help():
         return True
     return False
 
+def clon_help():
+    if question == 'Копия с гитхаб' or question == 'Копия':
+        print('---------------------------------------------------')
+        print('Для начала нажми на Git')
+        print('Если это новый файл то нажми get from version control')
+        print('Если старый нажми clon')
+        print('---------------------------------------------------')
+        print()
+        return True
+    return False
 
 def command_new():
     if question == 'новый' or question == 'н':

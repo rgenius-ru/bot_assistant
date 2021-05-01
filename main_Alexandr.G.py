@@ -79,10 +79,6 @@ def command_exit():
         sys.exit(0)
 
 
-def anime_none():
-    pass
-
-
 def anime():
     if question == 'аниме' or question == 'а':
         print('---------------------------------------------------')
@@ -129,6 +125,5 @@ while 1:
     is_command_in_base = command_random(question)
     command_exit()
     is_command_in_base = anime()
-    anime_none()
 
     question_answer()
