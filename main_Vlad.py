@@ -100,22 +100,43 @@ def i_dont_know():
         print(random.choice(notUnderstandList))
         print()
 
-def command_r_number():
-    if question == 'roll' or question == 'r':
-        print('---------------------------------------------------')
-        print('Введите тип ролла')
-        print('Введите ставку')
-        print('---------------------------------------------------')
-        return True
-    return False
+def money(question):
+    if question == 'монета' or question == 'м':
+        e = 1
+        c = 0
+        question = input('орел или решка?')
+        if question == 'орел' or question == 'о':
+            m = random.randint(e, c)
+            print('подкидываем монетку...', )
+            if m == 1:
+                print('УРА ВАМ ВЫПАЛ : ОРЕЛ')
+            if question == 'решка' or question == 'р':
+                m = random.randint(e, c)
+                print('подкидываем монетку...')
+                if m == 0:
+                 print('УРА ВАМ ВЫПАЛ : РЕШКА')
 
+
+def command_r_number(question):
+    if question == 'roll' or question == 'roll':
+        r_n = random.randint(0, 10)
+        r = random.randint(0, 100)
+
+        question = input('Введите тип ролла')
+        if question == 'rol-nolet' or question == 'r-n':
+            print('производится ролл...', )
+            print('УРА ВАМ ВЫПАЛО ЧИСЛО :',r_n)
+            if question == 'roll-classic' or question == 'r-c':
+                print('производится ролл...',r)
+                print('УРА ВАМ ВЫПАЛО ЧИСЛО :', r)
 
 
 # Бесконечный цикл
 is_command_in_base = False
 while 1:
     question = input()
-    is_command_in_base = command_r_number()
+    is_command_in_base = command_r_number(question)
+    is_command_in_base = money(question)
     is_command_in_base = command_help()
     is_command_in_base = command_new()
     is_command_in_base = command_all()
