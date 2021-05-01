@@ -78,6 +78,8 @@ def command_exit():
 
         sys.exit(0)
 
+def zaglushka():
+    print("prosto_nichego")
 
 def anime():
     if question == 'аниме' or question == 'а':
@@ -125,5 +127,5 @@ while 1:
     is_command_in_base = command_random(question)
     command_exit()
     is_command_in_base = anime()
-
+    zaglushka()
     question_answer()
