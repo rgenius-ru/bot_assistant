@@ -36,6 +36,7 @@ def command_help():
         return True
     return False
 
+
 def clon_help():
     if question == 'Копия с гитхаб' or question == 'Копия':
         print('---------------------------------------------------')
@@ -46,6 +47,7 @@ def clon_help():
         print()
         return True
     return False
+
 
 def command_new():
     if question == 'новый' or question == 'н':
