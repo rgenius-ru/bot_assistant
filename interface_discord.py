@@ -40,6 +40,13 @@ async def on_message(message):
         ]
         response = random.choice(quotes)
         await message.channel.send(response)
+    elif message.content == 'пинг':
+        quotes = [
+            'Понг',
+            'pong!'
+        ]
+        response = random.choice(quotes)
+        await message.channel.send(response)
     elif message.content == 'raise-exception':
         raise discord.DiscordException
 
