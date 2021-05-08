@@ -6,6 +6,8 @@ import random
 import discord
 from dotenv import load_dotenv
 
+import nltk
+
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 if not TOKEN:
@@ -27,6 +29,10 @@ async def on_member_join(member):
     )
 
 
+def is_similar_to():
+    pass
+
+
 @client.event
 async def on_message(message):
     if message.author == client.user:
@@ -40,10 +46,10 @@ async def on_message(message):
         ]
         response = random.choice(quotes)
         await message.channel.send(response)
-    elif message.content == 'пинг':
+    elif message.content == 'копия с гитхаб':
         quotes = [
-            'Понг',
-            'pong!'
+            '',
+            ''
         ]
         response = random.choice(quotes)
         await message.channel.send(response)
