@@ -68,23 +68,16 @@ async def on_message(message):
         ]
         response = random.choice(quotes)
         await message.channel.send(response)
-    elif message.content == 'копия с гитхаб':
-        quotes = [
-            '',
-            ''
-        ]
-        response = random.choice(quotes)
-        await message.channel.send(response)
-    elif '!' in message.content:
-        text1, text2 = message.content.split(',')
-        print(text1[1:], text2)
 
-        if is_similar_to(text1[1:], text2):
-            response = 'Фразы похожи'
-        else:
-            response = 'Фразы Не похожи'
-
+    elif is_similar_to(message.content, 'копия с гитхаб'):
+        # quotes = [
+        #    '',
+        #    ''
+        # ]
+        # response = random.choice(quotes)
+        response = 'Чтобы сделать копию с гитхаб надо ...'
         await message.channel.send(response)
+
     elif message.content == 'raise-exception':
         raise discord.DiscordException
 
