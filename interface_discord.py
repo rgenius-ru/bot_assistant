@@ -16,6 +16,32 @@ if not TOKEN:
 client = discord.Client()
 
 
+def is_similar_to(text1, text2):  # Похожая на ...
+    # Добрый вечер
+    # Дбрый вечер
+    # Добрый вече
+
+    # Добрый вечер
+
+    # Добрый дечер
+    # Добрый денер
+    # Добрый деньр
+    # Добрый день
+
+    # Добрый день
+
+    # Расстояние = 4
+    # Изменение в проценнтах = 4/26 (= 0.15) Какой хороший Добрый день
+    # Изменение в проценнтах = 4/26 (= 0.33) Добрый день
+    distance = nltk.edit_distance(text1, text2)
+    difference = distance / len(text1)
+    print(distance, difference)
+
+    if difference < 0.35:
+        return True
+    return False
+
+
 @client.event
 async def on_ready():
     print(f'{client.user.name} подключился к Discord!')
@@ -27,10 +53,6 @@ async def on_member_join(member):
     await member.dm_channel.send(
         f'Hi {member.name}, Приветствуем тебя на нашем сервере!'
     )
-
-
-def is_similar_to():
-    pass
 
 
 @client.event
@@ -53,7 +75,19 @@ async def on_message(message):
         ]
         response = random.choice(quotes)
         await message.channel.send(response)
+    elif '!' in message.content:
+        text1, text2 = message.content.split(',')
+        print(text1[1:], text2)
+
+        if is_similar_to(text1[1:], text2):
+            response = 'Фразы похожи'
+        else:
+            response = 'Фразы Не похожи'
+
+        await message.channel.send(response)
     elif message.content == 'raise-exception':
         raise discord.DiscordException
 
 client.run(TOKEN)
+
+
