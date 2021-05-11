@@ -81,6 +81,18 @@ async def on_message(message):
     elif message.content == 'raise-exception':
         raise discord.DiscordException
 
+
+def dialog(replica):
+    # NLU (Natural Language Understanding)
+    # Относим реплику к какому-либо классу намерений
+
+    # Answer generation
+    # Выдать заготовленный ответ основываясь на намерении
+    # Если заготовленного ответа нет, то сгенерировать ответ автоматически и выдать его
+    # Если не удалось сгенерировать ответ, то выдать фразу: "Я непонял"; "Перефразируй" и т.п.
+    pass
+
+
 client.run(TOKEN)
 
 
