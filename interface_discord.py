@@ -82,8 +82,12 @@ def clear_phrases(replica):
     return replica
 
 
-def get_intent():
-    pass
+def get_intent(replica):
+    for example in BOT_CONFIG.get('intents'):
+        print(example)
+
+    intent = None
+    return intent
 
 
 def start_dialogue(replica):
@@ -100,8 +104,37 @@ def start_dialogue(replica):
     # NLU (Natural Language Understanding):
     #  Предварительная обработка реплики (очистка, регистр букв и т.п.)
     replica = clear_phrases(replica)
+
+    #  Относим реплику к какому-либо классу намерений
+    intent = get_intent(replica)
+
     answer = replica
     return answer
 
+
+BOT_CONFIG = {
+    'intents': {
+        'hello': {
+            'examples': [
+                'qq', 'hi', 'привет', 'welcome to the club body', 'boy next door'
+            ],
+            'responses': [
+                'здоров', 'барев зес', 'здоров', 'Дадова', 'НУ ЗДАРОВА', 'хэлоу май фрэндс', 'здравствуйте'
+            ]
+        },
+        'goodbye': {
+            'examples': [
+                'бб', 'gg', 'прощай дружок', 'goodbye'
+            ],
+            'responses': [
+                'goodbye', 'изыди', 'до свидания'
+            ]
+        }
+    },
+    'failure_phrases': [
+        "Я непонял",
+        "Перефразируй"
+    ]
+}
 
 client.run(TOKEN)
