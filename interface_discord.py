@@ -60,26 +60,30 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content == 'что ты умеешь?':
-        quotes = [
-            'Пока что ничего.',
-            'Ничего!',
-            '... ничего. Научи меня.'
-        ]
-        response = random.choice(quotes)
-        await message.channel.send(response)
-
-    elif is_similar_to(message.content, 'копия с гитхаб'):
-        # quotes = [
-        #    '',
-        #    ''
-        # ]
-        # response = random.choice(quotes)
-        response = 'Чтобы сделать копию с гитхаб надо ...'
-        await message.channel.send(response)
-
-    elif message.content == 'raise-exception':
+    if message.content == 'raise-exception':
         raise discord.DiscordException
+
+    response = start_dialogue(message.content)
+    await message.channel.send(response)
+
+
+def clear_phrases(replica):
+    replica = replica.lower()
+    alfabet_russ = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
+    alfabet_engl = 'abcdefghijklmnopqrstuvwxyz'
+    some_symbols = ' -'
+
+    replica_copy = ''
+    for symbol in replica:
+        if symbol in (alfabet_russ + alfabet_engl + some_symbols):
+            replica_copy += symbol  # replica_copy = replica_copy + symbol
+
+    replica = replica_copy
+    return replica
+
+
+def get_intent():
+    pass
 
 
 def start_dialogue(replica):
@@ -88,11 +92,16 @@ def start_dialogue(replica):
     #  Относим реплику к какому-либо классу намерений
     #  Извлекаем параметры реплики (извлечение сущностей и объектов)
 
-    # NLG (Natural Language Generation)
+    # NLG (Natural Language Generation):
     #  Выдать заготовленный ответ основываясь на намерении
     #  Если заготовленного ответа нет, то сгенерировать ответ автоматически и выдать его
     #  Если не удалось сгенерировать ответ, то выдать фразу: "Я непонял"; "Перефразируй" и т.п.
-    pass
+
+    # NLU (Natural Language Understanding):
+    #  Предварительная обработка реплики (очистка, регистр букв и т.п.)
+    replica = clear_phrases(replica)
+    answer = replica
+    return answer
 
 
 client.run(TOKEN)
