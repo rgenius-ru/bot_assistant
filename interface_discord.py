@@ -64,7 +64,7 @@ async def on_message(message):
         raise discord.DiscordException
 
     response = start_dialogue(message.content)
-    await message.channel.send(response)
+    # await message.channel.send(response)
 
 
 def clear_phrases(replica):
