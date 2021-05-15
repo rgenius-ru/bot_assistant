@@ -35,7 +35,7 @@ def is_similar_to(text1, text2):  # Похожая на ...
     # Изменение в проценнтах = 4/26 (= 0.33) Добрый день
     distance = nltk.edit_distance(text1, text2)
     difference = distance / len(text1)
-    print(distance, difference)
+    #print(distance, difference)
 
     if difference < 0.35:
         return True
@@ -83,11 +83,24 @@ def clear_phrases(replica):
 
 
 def get_intent(replica):
-    for example in BOT_CONFIG.get('intents'):
-        print(example)
+    # for items in BOT_CONFIG.items():
+    #     print(items)
 
-    intent = None
-    return intent
+    # print(replica)
+
+    for example in hello_examples:
+        if is_similar_to(replica, example.lower()):
+            return 'hello'
+
+    for example in goodbye_examples:
+        if is_similar_to(replica, example.lower()):
+            return 'goodbye'
+
+    for example in what_gift_do_you_want_examples:
+        if is_similar_to(replica, example.lower()):
+            return 'what_gift_do_you_want'
+
+    return None
 
 
 def start_dialogue(replica):
@@ -101,12 +114,14 @@ def start_dialogue(replica):
     #  Если заготовленного ответа нет, то сгенерировать ответ автоматически и выдать его
     #  Если не удалось сгенерировать ответ, то выдать фразу: "Я непонял"; "Перефразируй" и т.п.
 
+
     # NLU (Natural Language Understanding):
     #  Предварительная обработка реплики (очистка, регистр букв и т.п.)
     replica = clear_phrases(replica)
 
     #  Относим реплику к какому-либо классу намерений
     intent = get_intent(replica)
+    print(intent)
 
     answer = replica
     return answer
@@ -136,5 +151,17 @@ BOT_CONFIG = {
         "Перефразируй"
     ]
 }
+
+hello_examples = ['qq', 'hi', 'привет', 'welcome to the club body', 'boy next door']
+hello_responses = ['здоров', 'барев зес', 'здоров', 'Дадова', 'НУ ЗДАРОВА', 'хэлоу май фрэндс', 'здравствуйте']
+
+goodbye_examples = ['бб', 'gg', 'прощай дружок', 'goodbye', 'пока']
+goodbye_responses = ['goodbye', 'изыди', 'до свидания']
+
+music_examples = ['Включи музыку.', 'play song']
+music_responses = ['Мммм, я не разбираюсь в музыке.', 'У меня нет доступа к наушникам.']
+
+what_gift_do_you_want_examples = ['какой подарок ты хочешь', 'что тебе подарить', 'братан тебе Чего-Нибудь подарить', 'что тебе необходимо']
+what_gift_do_you_want_responses = ['совободные 30 гигабайт', 'клюшку для гольфа', 'диск со старыми играми', 'самосознание', 'душу']
 
 client.run(TOKEN)
