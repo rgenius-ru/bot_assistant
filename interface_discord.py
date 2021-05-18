@@ -64,7 +64,7 @@ async def on_message(message):
         raise discord.DiscordException
 
     response = start_dialogue(message.content)
-    # await message.channel.send(response)
+    await message.channel.send(response)
 
 
 def clear_phrases(replica):
@@ -96,6 +96,10 @@ def get_intent(replica):
         if is_similar_to(replica, example.lower()):
             return 'goodbye'
 
+    for example in music_examples:
+        if is_similar_to(replica, example.lower()):
+            return 'music'
+
     for example in what_gift_do_you_want_examples:
         if is_similar_to(replica, example.lower()):
             return 'what_gift_do_you_want'
@@ -103,7 +107,49 @@ def get_intent(replica):
     return None
 
 
+def failure_phrases():
+    phrases = [
+        'как-то непонятно',
+        'Нет данных',
+        'Я не понял, скажи нормально',
+        'Не понимаю о чем ты',
+        'Черт его знает, спроси чего полегче',
+        'чего?',
+        'а?',
+        'Что ты сказал?',
+        'выражайтесь так, как принято в культурном обществе]'
+    ]
+    return random.choice(phrases)
+
+
+def get_answer_from_intent(intent):
+    _hello_responses = ['здоров', 'барев зес', 'здоров', 'Дадова', 'НУ ЗДАРОВА', 'хэлоу май фрэндс', 'здравствуйте']
+    _goodbye_responses = ['goodbye', 'изыди', 'до свидания']
+    _music_responses = ['Мммм, я не разбираюсь в музыке.', 'У меня нет доступа к наушникам.']
+    _what_gift_do_you_want_responses = [
+        'совободные 30 гигабайт',
+        'клюшку для гольфа',
+        'диск со старыми играми',
+        'самосознание', 'душу'
+    ]
+
+    if intent == 'hello':
+        response = _hello_responses
+    elif intent == 'goodbye':
+        response = _goodbye_responses
+    elif intent == 'music':
+        response = _music_responses
+    elif intent == 'what_gift_do_you_want':
+        response = _what_gift_do_you_want_responses
+    else:
+        return None
+
+    answer = random.choice(response)
+    return answer
+
+
 def start_dialogue(replica):
+    answer = ''
     # NLU (Natural Language Understanding):
     #  Предварительная обработка реплики (очистка, регистр букв и т.п.)
     #  Относим реплику к какому-либо классу намерений
@@ -114,7 +160,6 @@ def start_dialogue(replica):
     #  Если заготовленного ответа нет, то сгенерировать ответ автоматически и выдать его
     #  Если не удалось сгенерировать ответ, то выдать фразу: "Я непонял"; "Перефразируй" и т.п.
 
-
     # NLU (Natural Language Understanding):
     #  Предварительная обработка реплики (очистка, регистр букв и т.п.)
     replica = clear_phrases(replica)
@@ -123,7 +168,14 @@ def start_dialogue(replica):
     intent = get_intent(replica)
     print(intent)
 
-    answer = replica
+    #  Выдать заготовленный ответ основываясь на намерении
+    if intent:
+        answer = get_answer_from_intent(intent)
+
+    #  Если не удалось сгенерировать ответ, то выдать фразу: "Я непонял"; "Перефразируй" и т.п.
+    if not intent:
+        answer = failure_phrases()
+
     return answer
 
 
