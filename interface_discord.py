@@ -220,14 +220,43 @@ what_gift_do_you_want_responses = ['совободные 30 гигабайт', '
 
 
 file = open('Intents/intents.txt', 'r')  # Отрытие файла в режиме чтения
-intents_text = file.read()  # Чтение данных из файла
+text = file.read()  # Чтение данных из файла
 file.close()  # Закрытие файла
-print(intents_text)
+
+text = text.split('\n')
+
 
 intents_list = [
     # ['hello', [], []],
     # ['goodbye', [], []],
 ]
 
+mode = 'intent'  # examples, responses, end_string, default_string
+end_paragraph = 'default_string'  # end_string
+index = 0
+for string in text:
+    if string == '[intent]':
+        mode = 'intent'
+        continue
+    elif string == '[examples]':
+        mode = 'examples'
+        continue
+    elif string == '[responses]':
+        mode = 'responses'
+        continue
+    elif string == '':
+        mode = 'end_string'
+        end_paragraph = True
+    else:
+        mode = 'default_string'
+
+    if mode == 'intent' and end_paragraph == 'default_string':
+        intents_list.append([[string], [], []])
+    elif mode == 'examples' and end_paragraph == 'default_string':
+        intents_list[index][1].append(string)
+    elif mode == 'responses' and end_paragraph == 'default_string':
+        intents_list[index][2].append(string)
+
+print(intents_list)
 
 client.run(TOKEN)
