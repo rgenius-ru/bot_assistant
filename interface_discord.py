@@ -60,6 +60,9 @@ async def on_message(message):
     if message.author == client.user:
         return
 
+    if message.author.bot:  # message.member.roles.has(BOT_ROLE)
+        return
+
     if message.content == 'raise-exception':
         raise discord.DiscordException
 
@@ -214,5 +217,17 @@ music_responses = ['Мммм, я не разбираюсь в музыке.', '�
 
 what_gift_do_you_want_examples = ['какой подарок ты хочешь', 'что тебе подарить', 'братан тебе Чего-Нибудь подарить', 'что тебе необходимо']
 what_gift_do_you_want_responses = ['совободные 30 гигабайт', 'клюшку для гольфа', 'диск со старыми играми', 'самосознание', 'душу']
+
+
+file = open('Intents/intents.txt', 'r')  # Отрытие файла в режиме чтения
+intents_text = file.read()  # Чтение данных из файла
+file.close()  # Закрытие файла
+print(intents_text)
+
+intents_list = [
+    # ['hello', [], []],
+    # ['goodbye', [], []],
+]
+
 
 client.run(TOKEN)
