@@ -181,6 +181,48 @@ def start_dialogue(replica):
     return answer
 
 
+def load_intents():  # Загрузить намерения из файла в память
+    file = open('Intents/intents.txt', 'r')  # Отрытие файла в режиме чтения
+    text = file.read()  # Чтение данных из файла
+    file.close()  # Закрытие файла
+
+    text = text.split('\n')  # Разделение текста и преобразование его в список строк
+
+    intents_list = [
+        # ['hello', [], []],
+        # ['goodbye', [], []],
+    ]
+
+    mode = 'intent'  # examples, responses, end_string, default_string
+    end_paragraph = 'default_string'  # end_string
+    index = -1
+    for string in text:
+        if string == '[intent]':
+            index += 1
+            mode = 'intent'
+            continue
+        elif string == '[examples]':
+            mode = 'examples'
+            continue
+        elif string == '[responses]':
+            mode = 'responses'
+            continue
+        elif string == '':
+            end_paragraph = 'end_string'
+        else:
+            end_paragraph = 'default_string'
+
+        if mode == 'intent' and end_paragraph == 'default_string':
+            intents_list.append([string, [], []])
+        elif mode == 'examples' and end_paragraph == 'default_string':
+            intents_list[index][1].append(string)
+        elif mode == 'responses' and end_paragraph == 'default_string':
+            intents_list[index][2].append(string)
+
+    for intent in intents_list:
+        print(intent)
+
+
 BOT_CONFIG = {
     'intents': {
         'hello': {
@@ -218,45 +260,6 @@ music_responses = ['Мммм, я не разбираюсь в музыке.', '�
 what_gift_do_you_want_examples = ['какой подарок ты хочешь', 'что тебе подарить', 'братан тебе Чего-Нибудь подарить', 'что тебе необходимо']
 what_gift_do_you_want_responses = ['совободные 30 гигабайт', 'клюшку для гольфа', 'диск со старыми играми', 'самосознание', 'душу']
 
-
-file = open('Intents/intents.txt', 'r')  # Отрытие файла в режиме чтения
-text = file.read()  # Чтение данных из файла
-file.close()  # Закрытие файла
-
-text = text.split('\n')
-
-
-intents_list = [
-    # ['hello', [], []],
-    # ['goodbye', [], []],
-]
-
-mode = 'intent'  # examples, responses, end_string, default_string
-end_paragraph = 'default_string'  # end_string
-index = 0
-for string in text:
-    if string == '[intent]':
-        mode = 'intent'
-        continue
-    elif string == '[examples]':
-        mode = 'examples'
-        continue
-    elif string == '[responses]':
-        mode = 'responses'
-        continue
-    elif string == '':
-        mode = 'end_string'
-        end_paragraph = True
-    else:
-        mode = 'default_string'
-
-    if mode == 'intent' and end_paragraph == 'default_string':
-        intents_list.append([[string], [], []])
-    elif mode == 'examples' and end_paragraph == 'default_string':
-        intents_list[index][1].append(string)
-    elif mode == 'responses' and end_paragraph == 'default_string':
-        intents_list[index][2].append(string)
-
-print(intents_list)
+load_intents()
 
 client.run(TOKEN)
