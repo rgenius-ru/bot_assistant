@@ -1,0 +1,33 @@
+[intent]
+hello
+
+[examples]
+qq
+hi
+привет
+welcome to the club body
+boy next door
+
+[responses]
+здоров
+барев зес
+здоров
+Дадова
+НУ ЗДАРОВА
+хэлоу май фрэндс
+здравствуйте
+
+[intent]
+goodbye
+
+[examples]
+бб
+gg
+прощай дружок
+goodbye
+пока
+
+[responses]
+goodbye
+изыди
+до свидания
