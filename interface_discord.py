@@ -113,11 +113,24 @@ def failure_phrases():
     return random.choice(phrases)
 
 
-def get_answer_from_intent(intent):
+def get_answer_from_intent(intent, replica):
+    """
+    Сообщение боту: Чем знаменит Борис Ельцин?
+    Ответ бота: Он бывший президент России
+
+    Сообщение боту: где живут пингвины?
+    Ответ бота: на Антарктиде
+    """
     response = []
 
     # answer = random.choice(response)
-    answer = 'Насколько я понял, твоё намерение: ' + intent
+    if intent == 'wiki':
+        if is_similar_to('Чем знаменит Борис Ельцин?', replica):
+            answer = 'Он бывший президент России'
+        elif is_similar_to('где живут пингвины?', replica):
+            answer = 'на Антарктиде'
+    else:
+        answer = 'Насколько я понял, твоё намерение: ' + intent
     return answer
 
 
@@ -142,7 +155,7 @@ def start_dialogue(replica):
 
     #  Выдать заготовленный ответ основываясь на намерении
     if intent:
-        answer = get_answer_from_intent(intent)
+        answer = get_answer_from_intent(intent, replica)
 
     #  Если не удалось сгенерировать ответ, то выдать фразу: "Я непонял"; "Перефразируй" и т.п.
     if not answer:
