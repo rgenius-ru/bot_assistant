@@ -124,6 +124,7 @@ def get_answer_from_intent(intent, replica):
     response = []
 
     # answer = random.choice(response)
+    answer = None
     if intent == 'wiki':
         if is_similar_to('Чем знаменит Борис Ельцин?', replica):
             answer = 'Он бывший президент России'
