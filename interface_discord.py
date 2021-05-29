@@ -207,7 +207,7 @@ def load_intents_old():  # Загрузить намерения из файла
 
 
 def load_intents():  # Загрузить намерения из файла в память
-    file = open('Intents/intents.txt', 'r')  # Отрытие файла в режиме чтения
+    file = open('Intents/intents.txt', 'r', encoding='utf-8')  # Отрытие файла в режиме чтения
     text = file.read()  # Чтение данных из файла
     file.close()  # Закрытие файла
 
