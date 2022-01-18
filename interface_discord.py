@@ -130,6 +130,11 @@ def get_answer_from_intent(intent, replica):
             answer = 'Он бывший президент России'
         elif is_similar_to('где живут пингвины?', replica):
             answer = 'на Антарктиде'
+    elif intent == 'про_кошек':
+        if is_similar_to('Как там мой кошак?', replica):
+            answer = 'Сбежал куда-то вчера с пятого этажа'
+        elif is_similar_to('Что известно о кошках?', replica):
+            answer = 'что они усатые'
     else:
         answer = 'Насколько я понял, твоё намерение: ' + intent
 
