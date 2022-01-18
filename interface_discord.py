@@ -217,9 +217,11 @@ def load_intents():  # Загрузить намерения из файла в 
     return text
 
 
+# Описание сновного алгоритма находится в функции start_dialogue()
+
 # intents_list = [
-    # ['hello', [], []],
-    # ['goodbye', [], []],
+# ['hello', [], []],
+# ['goodbye', [], []],
 # ]
 
 # load_intents_old()
