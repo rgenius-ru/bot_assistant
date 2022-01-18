@@ -132,6 +132,7 @@ def get_answer_from_intent(intent, replica):
             answer = 'на Антарктиде'
     else:
         answer = 'Насколько я понял, твоё намерение: ' + intent
+
     return answer
 
 
