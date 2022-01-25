@@ -57,10 +57,15 @@ async def on_member_join(member):
 
 @client.event
 async def on_message(message):
+    print(message.author)
+
     if message.author == client.user:
         return
 
     if message.author.bot:  # message.member.roles.has(BOT_ROLE)
+        return
+
+    if message.author.name != 'rgenius' and message.author.discriminator != '1118':
         return
 
     if message.content == 'raise-exception':
