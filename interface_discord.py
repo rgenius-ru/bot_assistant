@@ -141,7 +141,24 @@ def get_answer_from_intent(intent, replica):
     return answer
 
 
+def load_intents():
+    """
+    # Загрузить намерения из файла в память
+    """
+
+    file = open('Intents/intents.txt', 'r', encoding='utf-8')  # Отрытие файла в режиме чтения
+    text = file.read()  # Чтение данных из файла
+    file.close()  # Закрытие файла
+
+    text = text.split('\n')  # Разделение текста и преобразование его в список строк
+
+    return text
+
+
 def start_dialogue(replica):
+    """
+    # Общий план диалогов:
+
     # NLU (Natural Language Understanding):
     # + Предварительная обработка реплики (очистка, регистр букв и т.п.)
     # + Относим реплику к какому-либо классу намерений
@@ -151,6 +168,10 @@ def start_dialogue(replica):
     # + Выдать заготовленный ответ основываясь на намерении
     # - Если заготовленного ответа нет, то сгенерировать ответ автоматически и выдать его
     # + Если не удалось сгенерировать ответ, то выдать фразу: "Я непонял"; "Перефразируй" и т.п.
+
+    :param replica:
+    :return: answer
+    """
 
     answer = ''
     #  Предварительная обработка реплики (очистка, регистр букв и т.п.)
@@ -171,68 +192,8 @@ def start_dialogue(replica):
     return answer
 
 
-def load_intents_old():  # Загрузить намерения из файла в память
-    file = open('Intents/intents_old.txt', 'r')  # Отрытие файла в режиме чтения
-    text = file.read()  # Чтение данных из файла
-    file.close()  # Закрытие файла
-
-    text = text.split('\n')  # Разделение текста и преобразование его в список строк
-
-    intents_list = [
-        # ['hello', [], []],
-        # ['goodbye', [], []],
-    ]
-
-    mode = 'intent'  # examples, responses, end_string, default_string
-    end_paragraph = 'default_string'  # end_string
-    index = -1
-    for string in text:
-        if string == '[intent]':
-            index += 1
-            mode = 'intent'
-            continue
-        elif string == '[examples]':
-            mode = 'examples'
-            continue
-        elif string == '[responses]':
-            mode = 'responses'
-            continue
-        elif string == '':
-            end_paragraph = 'end_string'
-        else:
-            end_paragraph = 'default_string'
-
-        if mode == 'intent' and end_paragraph == 'default_string':
-            intents_list.append([string, [], []])
-        elif mode == 'examples' and end_paragraph == 'default_string':
-            intents_list[index][1].append(string)
-        elif mode == 'responses' and end_paragraph == 'default_string':
-            intents_list[index][2].append(string)
-
-    for intent in intents_list:
-        print(intent)
-
-
-def load_intents():  # Загрузить намерения из файла в память
-    file = open('Intents/intents.txt', 'r', encoding='utf-8')  # Отрытие файла в режиме чтения
-    text = file.read()  # Чтение данных из файла
-    file.close()  # Закрытие файла
-
-    text = text.split('\n')  # Разделение текста и преобразование его в список строк
-
-    return text
-
-
 # Описание сновного алгоритма находится в функции start_dialogue()
 
-# intents_list = [
-# ['hello', [], []],
-# ['goodbye', [], []],
-# ]
-
-# load_intents_old()
-
-# intents - list strings from raw file intents.txt
-intents_list = load_intents()
+intents_list = load_intents()  # intents - list strings from raw file intents.txt
 
 client.run(TOKEN)
