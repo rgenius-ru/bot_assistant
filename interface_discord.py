@@ -10,6 +10,7 @@ import nltk
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+print(TOKEN)
 if not TOKEN:
     exit('TOKEN = None')
 
@@ -65,8 +66,8 @@ async def on_message(message):
     if message.author.bot:  # message.member.roles.has(BOT_ROLE)
         return
 
-    if message.author.name != 'rgenius' and message.author.discriminator != '1118':
-        return
+    # if message.author.name != 'rgenius' and message.author.discriminator != '1118':
+    #     return
 
     if message.content == 'raise-exception':
         raise discord.DiscordException
@@ -97,7 +98,7 @@ def get_intent(replica):
             index_separator = string.index(':')
             intent = string[index_separator + 1:]
             # print(intent)
-        if is_similar_to(replica, string.lower()):
+        if is_similar_to(replica, clear_phrases(string)):
             return intent
 
     return None
@@ -142,14 +143,6 @@ def get_answer_from_intent(intent, replica):
             answer = 'что они усатые'
 
     elif intent == 'расскажи_прогноз_погоды':
-
-
-
-
-
-
-
-
         days = ['сегодня', 'завтра', 'послезавтра', 'понедельниц', 'вторник', 'среда']
         phenomenons = ['дождь', 'снег', 'облачность', 'гололедица']
         phrase = 'Завтра дождь будет?'
@@ -162,17 +155,12 @@ def get_answer_from_intent(intent, replica):
         # Цикл
         # phenomenon = 'дождь'
 
-
-
-
-
-
         if is_similar_to(phrase, replica):
 
                 print('Спрашивает про сегодня')
 
     else:
-        answer = 'Насколько я понял, твоё намерение: ' + intent
+        print('Насколько я понял, твоё намерение: ', intent)
 
     return answer
 
@@ -191,6 +179,25 @@ def load_intents():
     return text
 
 
+def generate_answer(intent, replica):
+    # сгенерировать ответ
+    answer = None
+
+    if intent == 'помощь_в_python':
+        if is_similar_to(replica, 'какие бывают типы данных'):
+            answer = """
+            int, float (числа)
+            str (строки)
+            list (списки)
+            dict (словари)
+            tuple (кортежи)
+            set (множества)
+            bool (логический тип данных)
+            """
+
+    return answer
+
+
 def start_dialogue(replica):
     """
     # Общий план диалогов:
@@ -198,7 +205,7 @@ def start_dialogue(replica):
     # NLU (Natural Language Understanding):
     # + Предварительная обработка реплики (очистка, регистр букв и т.п.)
     # + Относим реплику к какому-либо классу намерений
-    # - Извлекаем параметры реплики (извлечение сущностей и объектов)
+    # + Извлекаем параметры реплики (извлечение сущностей и объектов)
 
     # NLG (Natural Language Generation):
     # + Выдать заготовленный ответ основываясь на намерении
@@ -220,6 +227,11 @@ def start_dialogue(replica):
     #  Выдать заготовленный ответ основываясь на намерении
     if intent:
         answer = get_answer_from_intent(intent, replica)
+
+    # Если заготовленного ответа нет, то сгенерировать ответ автоматически и выдать его
+    # print('-------', answer)
+    if not answer:
+        answer = generate_answer(intent, replica)
 
     #  Если не удалось сгенерировать ответ, то выдать фразу: "Я непонял"; "Перефразируй" и т.п.
     if not answer:
