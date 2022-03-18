@@ -195,19 +195,18 @@ def generate_answer(intent, replica):
             if start_flag and string.startswith('## intent:'):
                 break
             if start_flag and string != '':
-                questions.append(string)
-
-        for question in questions:
-            distance = nltk.edit_distance(question, replica)
-            distances.append(distance)
-            print(distance, '\t', question)
+                distance = nltk.edit_distance(string, replica)
+                if distance < 10:
+                    questions.append(string)
+                    distances.append(distance)
+                    print(distance, '\t', string)
 
         print(distances)
         print(questions)
 
         # Задание
-
-
+        index = distances.index(min(distances))
+        answer = questions[index]
 
         # if is_similar_to(replica, 'какие бывают типы данных'):
         #     answer = """
