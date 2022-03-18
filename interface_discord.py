@@ -179,7 +179,7 @@ def load_intents():
     return text
 
 
-def generate_answer(intent, replica):
+def generate_answer(intent, replica, difference_threshold=10):
     # сгенерировать ответ
     answer = None
 
@@ -196,7 +196,7 @@ def generate_answer(intent, replica):
                 break
             if start_flag and string != '':
                 distance = nltk.edit_distance(string, replica)
-                if distance < 10:
+                if distance < difference_threshold:
                     questions.append(string)
                     distances.append(distance)
                     print(distance, '\t', string)
@@ -204,7 +204,6 @@ def generate_answer(intent, replica):
         print(distances)
         print(questions)
 
-        # Задание
         index = distances.index(min(distances))
         answer = questions[index]
 
