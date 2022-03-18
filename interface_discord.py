@@ -10,7 +10,7 @@ import nltk
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-print(TOKEN)
+# print(TOKEN)
 if not TOKEN:
     exit('TOKEN = None')
 
@@ -184,16 +184,41 @@ def generate_answer(intent, replica):
     answer = None
 
     if intent == 'помощь_в_python':
-        if is_similar_to(replica, 'какие бывают типы данных'):
-            answer = """
-            int, float (числа)
-            str (строки)
-            list (списки)
-            dict (словари)
-            tuple (кортежи)
-            set (множества)
-            bool (логический тип данных)
-            """
+        # Вывести коэффициенты похожести (дистанции Левенштейна)
+        questions = []
+        distances = []
+        start_flag = False
+        for string in intents_list:
+            if string == '## intent:помощь_в_python':
+                start_flag = True
+                continue
+            if start_flag and string.startswith('## intent:'):
+                break
+            if start_flag and string != '':
+                questions.append(string)
+
+        for question in questions:
+            distance = nltk.edit_distance(question, replica)
+            distances.append(distance)
+            print(distance, '\t', question)
+
+        print(distances)
+        print(questions)
+
+        # Задание
+
+
+
+        # if is_similar_to(replica, 'какие бывают типы данных'):
+        #     answer = """
+        #     int, float (числа)
+        #     str (строки)
+        #     list (списки)
+        #     dict (словари)
+        #     tuple (кортежи)
+        #     set (множества)
+        #     bool (логический тип данных)
+        #     """
 
     return answer
 
