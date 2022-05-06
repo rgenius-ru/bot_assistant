@@ -20,7 +20,7 @@ print('---------------------------------------------------')
 print()
 
 # Чтение файла с вопросами и ответами
-with open('../datafile') as f:
+with open('../old/datafile') as f:
     main_list = json.load(f)
     f.close()
 
@@ -66,7 +66,7 @@ def command_new():
         v2 = input('      ответ : ')
         main_list[v1] = v2
 
-        with open('../datafile', 'w') as f:
+        with open('../old/datafile', 'w') as f:
             f.seek(0)
             f.truncate(0)
             json.dump(main_list, f, sort_keys=True, indent=4,
@@ -93,7 +93,7 @@ def command_exit():
     if question == 'выход' or question == 'в':
         print('записываем в блокнотик и..')
 
-        with open('../datafile', 'w') as f:
+        with open('../old/datafile', 'w') as f:
             f.truncate(0)
             json.dump(main_list, f, sort_keys=True, indent=4,
                       ensure_ascii=False)

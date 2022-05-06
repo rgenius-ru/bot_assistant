@@ -20,7 +20,7 @@ print('---------------------------------------------------')
 print()
 
 # Чтение файла с вопросами и ответами
-with open('../old/datafile') as f:
+with open('datafile') as f:
     main_list = json.load(f)
     f.close()
 
@@ -36,16 +36,13 @@ def command_help():
         return True
     return False
 
-def Athor():
-    if question == 'Автроры' or question == 'а':
+
+def clon_help():
+    if question == 'Копия с гитхаб' or question == 'Копия':
         print('---------------------------------------------------')
-        print('Сергей')
-        print('Матвей')
-        print('Артем')
-        print('Саша Г.')
-        print('Саша Р.')
-        print('Степан')
-        print('Лёша')
+        print('Для начала нажми на Git')
+        print('Если это новый файл то нажми get from version control')
+        print('Если старый нажми clon')
         print('---------------------------------------------------')
         print()
         return True
@@ -58,7 +55,7 @@ def command_new():
         v2 = input('      ответ : ')
         main_list[v1] = v2
 
-        with open('../old/datafile', 'w') as f:
+        with open('datafile', 'w') as f:
             f.seek(0)
             f.truncate(0)
             json.dump(main_list, f, sort_keys=True, indent=4,
@@ -84,7 +81,7 @@ def command_exit():
     if question == 'выход' or question == 'в':
         print('записываем в блокнотик и..')
 
-        with open('../old/datafile', 'w') as f:
+        with open('datafile', 'w') as f:
             f.truncate(0)
             json.dump(main_list, f, sort_keys=True, indent=4,
                       ensure_ascii=False)
@@ -121,7 +118,7 @@ def i_dont_know():
 is_command_in_base = False
 while 1:
     question = input()
-    is_command_in_base = Athor()
+
     is_command_in_base = command_help()
     is_command_in_base = command_new()
     is_command_in_base = command_all()

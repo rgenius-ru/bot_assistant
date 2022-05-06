@@ -1,128 +1,260 @@
-import json
+import os
+from sys import exit
 import random
-import sys
-
-# Список случайных ответов, если бот не знает что ответить
-notUnderstandList = [
-    'моя твоя не понимат!!',
-    'Чтобы узнать что я умею напиши: помощь или п',
-    'I\'m from Russia'
-]
-
-# Приветственная фраза
-print()
-print('---------------------------------------------------')
-print('Привет. Я Чатбот.')
-print()
-print('Напиши мне что-нибудь, и я отвечу')
-print('Чтобы узнать что я умею напиши: помощь или п')
-print('---------------------------------------------------')
-print()
-
-# Чтение файла с вопросами и ответами
-with open('datafile') as f:
-    main_list = json.load(f)
-    f.close()
+import discord
+from dotenv import load_dotenv
+import nltk
+import mongodb as mdb
 
 
-def command_help():
-    if question == 'помощь' or question == 'п':
-        print('---------------------------------------------------')
-        print('новый (коротко: н) - запись в базу нового вопроса и ответа.')
-        print('все вопросы (коротко: все) - вывод всех вопросов и ответов.')
-        print('выход (коротко: в) - обновление базы и выход из программы.')
-        print('---------------------------------------------------')
-        print()
+load_dotenv()
+TOKEN = os.getenv('DISCORD_TOKEN')
+# print(TOKEN)
+if not TOKEN:
+    exit('TOKEN = None')
+
+client = discord.Client()
+
+
+def is_similar_to(text1, text2, percent=0.35):  # Похожая на ...
+    # Добрый вечер
+    # Дбрый вечер
+    # Добрый вече
+
+    # Добрый вечер
+
+    # Добрый дечер
+    # Добрый денер
+    # Добрый деньр
+    # Добрый день
+
+    # Добрый день
+
+    # Расстояние = 4
+    # Изменение в проценнтах = 4/26 (= 0.15) Какой хороший Добрый день
+    # Изменение в проценнтах = 4/26 (= 0.33) Добрый день
+    distance = nltk.edit_distance(text1, text2)
+    difference = distance / len(text1)
+    # print(distance, difference)
+
+    if difference < percent:
         return True
     return False
 
 
-def clon_help():
-    if question == 'Копия с гитхаб' or question == 'Копия':
-        print('---------------------------------------------------')
-        print('Для начала нажми на Git')
-        print('Если это новый файл то нажми get from version control')
-        print('Если старый нажми clon')
-        print('---------------------------------------------------')
-        print()
-        return True
-    return False
+@client.event
+async def on_ready():
+    print(f'{client.user.name} подключился к Discord!')
 
 
-def command_new():
-    if question == 'новый' or question == 'н':
-        v1 = input('новый вопрос: ')
-        v2 = input('      ответ : ')
-        main_list[v1] = v2
-
-        with open('datafile', 'w') as f:
-            f.seek(0)
-            f.truncate(0)
-            json.dump(main_list, f, sort_keys=True, indent=4,
-                      ensure_ascii=False)
-
-        print()
-        return True
-    return False
+@client.event
+async def on_member_join(member):
+    await member.create_dm()
+    await member.dm_channel.send(
+        f'Hi {member.name}, Приветствуем тебя на нашем сервере!'
+    )
 
 
-def command_all():
-    if question == 'все вопросы' or question == 'все':
-        print()
-        for question_answer in main_list:
-            print(question_answer)
-            print(main_list[question_answer])
-            print()
-        return True
-    return False
+@client.event
+async def on_message(message):
+    print(message.author)
+
+    if message.author == client.user:
+        return
+
+    if message.author.bot:  # message.member.roles.has(BOT_ROLE)
+        return
+
+    # if message.author.name != 'rgenius' and message.author.discriminator != '1118':
+    #     return
+
+    if message.content == 'raise-exception':
+        raise discord.DiscordException
+
+    response = start_dialogue(message.content)
+    await message.channel.send(response)
 
 
-def command_exit():
-    if question == 'выход' or question == 'в':
-        print('записываем в блокнотик и..')
+def clear_phrases(replica):
+    replica = replica.lower()
+    alphabet_russ = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
+    alphabet_eng = 'abcdefghijklmnopqrstuvwxyz'
+    some_symbols = ' -'
 
-        with open('datafile', 'w') as f:
-            f.truncate(0)
-            json.dump(main_list, f, sort_keys=True, indent=4,
-                      ensure_ascii=False)
-            print('уходим')
-            f.close()
+    replica_copy = ''
+    for symbol in replica:
+        if symbol in (alphabet_russ + alphabet_eng + some_symbols):
+            replica_copy += symbol  # replica_copy = replica_copy + symbol
 
-        sys.exit(0)
-
-
-def command_random(_question):
-    if _question == 'рандом' or _question == 'р':
-        for x in range(5):
-            _question, answer = random.choice(list(main_list.items()))
-            print(_question, ':', answer)
-        return True
-    return False
+    replica = replica_copy
+    return replica
 
 
-def question_answer():
-    if question in main_list:
-        print(main_list[question])
-        print()
-        return True
-    return False
+def get_intent(replica):
+    intent = None
+    for string in intents_list:
+        if string.startswith('##'):
+            index_separator = string.index(':')
+            intent = string[index_separator + 1:]
+            # print(intent)
+        if is_similar_to(replica, clear_phrases(string)):
+            return intent
+
+    return None
 
 
-def i_dont_know():
-    if not is_command_in_base:
-        print(random.choice(notUnderstandList))
-        print()
+def random_failure_phrase():
+    return random.choice(failure_phrases)
 
 
-# Бесконечный цикл
-is_command_in_base = False
-while 1:
-    question = input()
+def get_answer_from_intent(intent, replica):
+    """
+    Сообщение боту: Чем знаменит Борис Ельцин?
+    Ответ бота: Он бывший президент России
 
-    is_command_in_base = command_help()
-    is_command_in_base = command_new()
-    is_command_in_base = command_all()
-    is_command_in_base = command_random(question)
-    command_exit()
+    Сообщение боту: где живут пингвины?
+    Ответ бота: на Антарктиде
+    """
+    response = []
 
-    question_answer()
+    # answer = random.choice(response)
+    answer = None
+    if intent == 'wiki':
+        if is_similar_to('Чем знаменит Борис Ельцин?', replica):
+            answer = 'Он бывший президент России'
+        elif is_similar_to('где живут пингвины?', replica):
+            answer = 'на Антарктиде'
+    elif intent == 'про_кошек':
+        if is_similar_to('Как там мой кошак?', replica):
+            answer = 'Сбежал куда-то вчера с пятого этажа'
+        elif is_similar_to('Что известно о кошках?', replica):
+            answer = 'что они усатые'
+
+    elif intent == 'расскажи_прогноз_погоды':
+        days = ['сегодня', 'завтра', 'послезавтра', 'понедельниц', 'вторник', 'среда']
+        phenomenons = ['дождь', 'снег', 'облачность', 'гололедица']
+        phrase = 'Завтра дождь будет?'
+        words = phrase.split()
+
+        # какая погода будет в 14 часов 14 числа?
+
+        # Цикл
+        # day = 'завтра'
+        # Цикл
+        # phenomenon = 'дождь'
+
+        if is_similar_to(phrase, replica):
+
+            print('Спрашивает про сегодня')
+
+    else:
+        print('Насколько я понял, твоё намерение: ', intent)
+
+    return answer
+
+
+def load_intents():
+    """
+    # Загрузить намерения из файла в память
+    """
+
+    file = open('Intents/intents.txt', 'r', encoding='utf-8')  # Отрытие файла в режиме чтения
+    text = file.read()  # Чтение данных из файла
+    file.close()  # Закрытие файла
+
+    text = text.split('\n')  # Разделение текста и преобразование его в список строк
+
+    return text
+
+
+def generate_answer(intent, replica, difference_threshold=10):
+    # сгенерировать ответ
+    answer = None
+
+    if intent == 'помощь_в_python':
+        # Вывести коэффициенты похожести (дистанции Левенштейна)
+        questions = []
+        distances = []
+        start_flag = False
+        for string in intents_list:
+            if string == '## intent:помощь_в_python':
+                start_flag = True
+                continue
+            if start_flag and string.startswith('## intent:'):
+                break
+            if start_flag and string != '':
+                distance = nltk.edit_distance(string, replica)
+                if distance < difference_threshold:
+                    questions.append(string)
+                    distances.append(distance)
+                    print(distance, '\t', string)
+
+        print(distances)
+        print(questions)
+
+        index = distances.index(min(distances))
+        answer = questions[index]
+
+        # if is_similar_to(replica, 'какие бывают типы данных'):
+        #     answer = """
+        #     int, float (числа)
+        #     str (строки)
+        #     list (списки)
+        #     dict (словари)
+        #     tuple (кортежи)
+        #     set (множества)
+        #     bool (логический тип данных)
+        #     """
+
+    return answer
+
+
+def start_dialogue(replica):
+    """
+    # Общий план диалогов:
+
+    # NLU (Natural Language Understanding):
+    # + Предварительная обработка реплики (очистка, регистр букв и т.п.)
+    # + Относим реплику к какому-либо классу намерений
+    # + Извлекаем параметры реплики (извлечение сущностей и объектов)
+
+    # NLG (Natural Language Generation):
+    # + Выдать заготовленный ответ основываясь на намерении
+    # - Если заготовленного ответа нет, то сгенерировать ответ автоматически и выдать его
+    # + Если не удалось сгенерировать ответ, то выдать фразу: "Я непонял"; "Перефразируй" и т.п.
+
+    :param replica:
+    :return: answer
+    """
+
+    answer = ''
+    #  Предварительная обработка реплики (очистка, регистр букв и т.п.)
+    replica = clear_phrases(replica)
+
+    #  Относим реплику к какому-либо классу намерений
+    intent = get_intent(replica)
+    print(intent)
+
+    #  Выдать заготовленный ответ основываясь на намерении
+    if intent:
+        answer = get_answer_from_intent(intent, replica)
+
+    # Если заготовленного ответа нет, то сгенерировать ответ автоматически и выдать его
+    # print('-------', answer)
+    if not answer:
+        answer = generate_answer(intent, replica)
+
+    #  Если не удалось сгенерировать ответ, то выдать фразу: "Я непонял"; "Перефразируй" и т.п.
+    if not answer:
+        answer = random_failure_phrase()
+
+    return answer
+
+
+# Описание сновного алгоритма находится в функции start_dialogue()
+
+intents_list = load_intents()  # intents - list strings from raw file intents.txt
+failure_phrases = mdb.load_db()
+print(failure_phrases)
+
+client.run(TOKEN)
