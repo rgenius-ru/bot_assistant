@@ -242,6 +242,9 @@ if __name__ == '__main__':
         exit('TOKEN = None')
 
     intents_list = load_intents()  # intents - list strings from raw file intents.txt
+    # print(intents_list)
+    # intents_list = mdb.get_intents() # TODO
+
     # print(*intents_list[:50], sep='\n')
 
     failure_phrases = mdb.load_failure_phrases()

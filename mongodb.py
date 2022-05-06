@@ -41,6 +41,18 @@ def print_collections(db):
     print('', 'Список коллекций:', *db.list_collection_names(), sep='\n')
 
 
+def get_intents(limit=None):
+    python_help_db = connect('python_help')
+    intents_collection = python_help_db['intents']
+
+    if limit:
+        intents = intents_collection.find().limit(limit)
+    else:
+        intents = intents_collection.find()
+
+    return intents
+
+
 def load_intents_from_file():
     file = open('Intents/intents.txt', 'r', encoding='utf-8')  # Отрытие файла в режиме чтения
     text = file.read()  # Чтение данных из файла
@@ -71,7 +83,20 @@ def load_intents_from_file():
     return intents
 
 
-def __save_intents():
+def __save_intent(intent_name, replicas):
+    data = {'intent': intent_name, 'questions': replicas}
+    print(data)
+
+    python_help_db = connect('python_help')
+    intents_collection = python_help_db['intents']
+
+    documents = intents_collection.insert_one(data)
+
+    print()
+    print('id: ', documents.inserted_id)
+
+
+def __save_intents_from_file():
     intents = load_intents_from_file()
     # print(intents)
     # print(len(intents))
@@ -93,12 +118,14 @@ def __save_intents():
 
     print_collections(python_help_db)
 
-    print()
-    print('Намерения:')
-    some_intents = intents_collection.find().limit(2)
-    print(*some_intents, sep='\n')
-
 
 if __name__ == '__main__':
     # print(load_failure_phrases())
-    __save_intents()
+    # __save_intents_from_file()
+
+    __save_intent(intent_name='test_delete_3', replicas=[1, 2, 3])
+
+    print()
+    print('Намерения:')
+    some_intents = get_intents()
+    print(*some_intents, sep='\n')
