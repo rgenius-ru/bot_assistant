@@ -3,15 +3,9 @@ from sys import exit
 import random
 import discord
 from dotenv import load_dotenv
-import nltk
+from nltk import edit_distance
 import mongodb as mdb
 
-
-load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
-# print(TOKEN)
-if not TOKEN:
-    exit('TOKEN = None')
 
 client = discord.Client()
 
@@ -33,7 +27,7 @@ def is_similar_to(text1, text2, percent=0.35):  # Похожая на ...
     # Расстояние = 4
     # Изменение в проценнтах = 4/26 (= 0.15) Какой хороший Добрый день
     # Изменение в проценнтах = 4/26 (= 0.33) Добрый день
-    distance = nltk.edit_distance(text1, text2)
+    distance = edit_distance(text1, text2)
     difference = distance / len(text1)
     # print(distance, difference)
 
@@ -115,7 +109,6 @@ def get_answer_from_intent(intent, replica):
     Сообщение боту: где живут пингвины?
     Ответ бота: на Антарктиде
     """
-    response = []
 
     # answer = random.choice(response)
     answer = None
@@ -131,10 +124,10 @@ def get_answer_from_intent(intent, replica):
             answer = 'что они усатые'
 
     elif intent == 'расскажи_прогноз_погоды':
-        days = ['сегодня', 'завтра', 'послезавтра', 'понедельниц', 'вторник', 'среда']
-        phenomenons = ['дождь', 'снег', 'облачность', 'гололедица']
+        # days = ['сегодня', 'завтра', 'послезавтра', 'понедельниц', 'вторник', 'среда']
+        # phenomenons = ['дождь', 'снег', 'облачность', 'гололедица']
         phrase = 'Завтра дождь будет?'
-        words = phrase.split()
+        # words = phrase.split()
 
         # какая погода будет в 14 часов 14 числа?
 
@@ -144,7 +137,6 @@ def get_answer_from_intent(intent, replica):
         # phenomenon = 'дождь'
 
         if is_similar_to(phrase, replica):
-
             print('Спрашивает про сегодня')
 
     else:
@@ -183,7 +175,7 @@ def generate_answer(intent, replica, difference_threshold=10):
             if start_flag and string.startswith('## intent:'):
                 break
             if start_flag and string != '':
-                distance = nltk.edit_distance(string, replica)
+                distance = edit_distance(string, replica)
                 if distance < difference_threshold:
                     questions.append(string)
                     distances.append(distance)
@@ -253,8 +245,15 @@ def start_dialogue(replica):
 
 # Описание сновного алгоритма находится в функции start_dialogue()
 
-intents_list = load_intents()  # intents - list strings from raw file intents.txt
-failure_phrases = mdb.load_db()
-print(failure_phrases)
+if __name__ == '__main__':
+    load_dotenv()
+    TOKEN = os.getenv('DISCORD_TOKEN')
+    # print(TOKEN)
+    if not TOKEN:
+        exit('TOKEN = None')
 
-client.run(TOKEN)
+    intents_list = load_intents()  # intents - list strings from raw file intents.txt
+    failure_phrases = mdb.load_db()
+    print(failure_phrases)
+
+    client.run(TOKEN)
