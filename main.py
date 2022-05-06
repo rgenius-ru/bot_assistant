@@ -253,7 +253,7 @@ if __name__ == '__main__':
         exit('TOKEN = None')
 
     intents_list = load_intents()  # intents - list strings from raw file intents.txt
-    failure_phrases = mdb.load_db()
+    failure_phrases = mdb.load_failure_phrases()
     print(failure_phrases)
 
     client.run(TOKEN)

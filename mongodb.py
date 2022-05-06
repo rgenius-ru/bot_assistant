@@ -2,7 +2,7 @@ from pymongo import MongoClient
 import os
 
 
-def load_db():
+def load_failure_phrases():
     login = os.getenv('mongo_login')
     password = os.getenv('mongo_pass')
     # print(login, password)
