@@ -187,17 +187,6 @@ def generate_answer(intent, replica, difference_threshold=10):
         index = distances.index(min(distances))
         answer = questions[index]
 
-        # if is_similar_to(replica, 'какие бывают типы данных'):
-        #     answer = """
-        #     int, float (числа)
-        #     str (строки)
-        #     list (списки)
-        #     dict (словари)
-        #     tuple (кортежи)
-        #     set (множества)
-        #     bool (логический тип данных)
-        #     """
-
     return answer
 
 
