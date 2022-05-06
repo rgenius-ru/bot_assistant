@@ -2,7 +2,7 @@ from pymongo import MongoClient
 import os
 
 
-def load_failure_phrases():
+def connect(db_name):
     login = os.getenv('mongo_login')
     password = os.getenv('mongo_pass')
     # print(login, password)
@@ -13,12 +13,15 @@ def load_failure_phrases():
           "?retryWrites=true" \
           "&w=majority"
     connection_mongo = MongoClient(uri)
+    db = connection_mongo[db_name]
 
-    print('Список доступных баз данных:', *connection_mongo.list_database_names(), sep='\n')
+    return db
 
-    python_help_db = connection_mongo['python_help']
+
+def load_failure_phrases():
+    python_help_db = connect('python_help')
+    # print('Список доступных баз данных:', *connection_mongo.list_database_names(), sep='\n')
     failure_phrases_collection = python_help_db['failure_phrases']
-
     some_phrases = failure_phrases_collection.find_one()
 
     if isinstance(some_phrases, dict):
