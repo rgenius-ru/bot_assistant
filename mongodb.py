@@ -28,3 +28,12 @@ def load_failure_phrases():
         return some_phrases.get('phrases')
 
     return None
+
+
+def save_intents():
+    file = open('Intents/intents.txt', 'r', encoding='utf-8')  # Отрытие файла в режиме чтения
+    text = file.read()  # Чтение данных из файла
+    file.close()  # Закрытие файла
+
+    text = text.split('\n')  # Разделение текста и преобразование его в список строк
+

@@ -10,32 +10,6 @@ import mongodb as mdb
 client = discord.Client()
 
 
-def is_similar_to(text1, text2, percent=0.35):  # Похожая на ...
-    # Добрый вечер
-    # Дбрый вечер
-    # Добрый вече
-
-    # Добрый вечер
-
-    # Добрый дечер
-    # Добрый денер
-    # Добрый деньр
-    # Добрый день
-
-    # Добрый день
-
-    # Расстояние = 4
-    # Изменение в проценнтах = 4/26 (= 0.15) Какой хороший Добрый день
-    # Изменение в проценнтах = 4/26 (= 0.33) Добрый день
-    distance = edit_distance(text1, text2)
-    difference = distance / len(text1)
-    # print(distance, difference)
-
-    if difference < percent:
-        return True
-    return False
-
-
 @client.event
 async def on_ready():
     print(f'{client.user.name} подключился к Discord!')
@@ -82,6 +56,32 @@ def clear_phrases(replica):
 
     replica = replica_copy
     return replica
+
+
+def is_similar_to(text1, text2, percent=0.35):  # Похожая на ...
+    # Добрый вечер
+    # Дбрый вечер
+    # Добрый вече
+
+    # Добрый вечер
+
+    # Добрый дечер
+    # Добрый денер
+    # Добрый деньр
+    # Добрый день
+
+    # Добрый день
+
+    # Расстояние = 4
+    # Изменение в проценнтах = 4/26 (= 0.15) Какой хороший Добрый день
+    # Изменение в проценнтах = 4/26 (= 0.33) Добрый день
+    distance = edit_distance(text1, text2)
+    difference = distance / len(text1)
+    # print(distance, difference)
+
+    if difference < percent:
+        return True
+    return False
 
 
 def get_intent(replica):
