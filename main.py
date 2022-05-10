@@ -220,6 +220,20 @@ def start_dialogue(replica):
     :return: answer
     """
 
+    command = '!добавь_вопрос '
+    if replica.startswith(command):  # !добавь_вопрос как возвести в квадрат? number ** 2
+        start = len(command)
+        stop = replica.index('?')
+        question = replica[start:stop + 1]
+        answer = replica[stop + 2:]
+
+        mdb.add_replica(question, answer)
+
+        global intents_name, all_intents
+        intents_name, all_intents = load_intents()
+
+        return 'Вопрос и ответ добавлены успешно.'
+
     answer = ''
     #  Предварительная обработка реплики (очистка, регистр букв и т.п.)
     replica = clear_phrases(replica)

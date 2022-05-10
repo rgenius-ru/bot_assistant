@@ -112,7 +112,7 @@ def add_replica(replica, answer=None, title='помощь_в_python'):
     answers.append(answer)
 
     query = {'title': title}  # Запрос - Что нужно заменить
-    new_values = {'$set': {'replicas':replicas, 'answers': answers}}  # Новое значение - Чем нужно заменить
+    new_values = {'$set': {'replicas': replicas, 'answers': answers}}  # Новое значение - Чем нужно заменить
     result = intents_collection.update_one(query, new_values)  # Заменить один документ
 
     print('Добавлено документов в количестве:', result.matched_count)
@@ -189,7 +189,7 @@ if __name__ == '__main__':
     # __save_intents_from_file()
     # __save_intent(title='test_ghfghfgh', replicas=['sdfsdf', 'dddd', 'eee'])
 
-    add_replica('как найти слово в предложении?', 'index_int = text_str.find(word_str)')
+    # add_replica('как найти слово в предложении?', 'index_int = text_str.find(word_str)')
     # update_answer('как вывести последний элемент списка?', 'print(list_name[:-1])')
     print(get_intent('помощь_в_python'))
 
