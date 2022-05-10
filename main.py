@@ -84,15 +84,14 @@ def is_similar_to(text1, text2, percent=0.35):  # Похожая на ...
     return False
 
 
-def get_intent(replica):
-    intent = None
-    for string in intents_list:
-        if string.startswith('##'):
-            index_separator = string.index(':')
-            intent = string[index_separator + 1:]
-            # print(intent)
-        if is_similar_to(replica, clear_phrases(string)):
-            return intent
+def get_intent(message):
+    for intent_dict in all_intents:
+        title = intent_dict.get('title')
+        replicas = intent_dict.get('replicas')
+
+        for replica in replicas:
+            if is_similar_to(message, clear_phrases(replica)):
+                return title
 
     return None
 
@@ -147,45 +146,58 @@ def get_answer_from_intent(intent, replica):
 
 def load_intents():
     """
-    # Загрузить намерения из файла в память
+    # Загрузить намерения из БД  в память
     """
 
-    file = open('Intents/intents.txt', 'r', encoding='utf-8')  # Отрытие файла в режиме чтения
-    text = file.read()  # Чтение данных из файла
-    file.close()  # Закрытие файла
+    mdb_intents = mdb.get_intents()
 
-    text = text.split('\n')  # Разделение текста и преобразование его в список строк
+    _all_intents = []
+    _intents_name = []
+    for intent in mdb_intents:
+        name = intent.get('title')
+        _all_intents.append(intent)
+        _intents_name.append(name)
 
-    return text
+    return _intents_name, _all_intents
 
 
-def generate_answer(intent, replica, difference_threshold=10):
+def generate_answer(intent_title, message, difference_threshold=10):
     # сгенерировать ответ
     answer = None
 
-    if intent == 'помощь_в_python':
+    if intent_title == 'помощь_в_python':
         # Вывести коэффициенты похожести (дистанции Левенштейна)
         questions = []
         distances = []
-        start_flag = False
-        for string in intents_list:
-            if string == '## intent:помощь_в_python':
-                start_flag = True
-                continue
-            if start_flag and string.startswith('## intent:'):
+        replicas = []
+        answers = []
+
+        for intent_dict in all_intents:
+            title = intent_dict.get('title')
+            if title == intent_title:
+                replicas = intent_dict.get('replicas')
+                answers = intent_dict.get('answers')
                 break
-            if start_flag and string != '':
-                distance = edit_distance(string, replica)
-                if distance < difference_threshold:
-                    questions.append(string)
-                    distances.append(distance)
-                    print(distance, '\t', string)
+
+        for replica in replicas:
+            distance = edit_distance(replica, message)
+            if distance < difference_threshold:
+                questions.append(replica)
+                distances.append(distance)
+                print(distance, '\t', replica)
 
         print(distances)
         print(questions)
 
         index = distances.index(min(distances))
-        answer = questions[index]
+        question = questions[index]
+        index_answer = replicas.index(question)
+
+        if answers[index_answer] is None:
+            return None
+
+        answer = '**Похожий вопрос:** ' + question + '\n'
+        answer += '**Ответ:** ' + answers[index_answer]
 
     return answer
 
@@ -241,13 +253,11 @@ if __name__ == '__main__':
     if not TOKEN:
         exit('TOKEN = None')
 
-    intents_list = load_intents()  # intents - list strings from raw file intents.txt
-    # print(intents_list)
-    # intents_list = mdb.get_intents() # TODO
-
-    # print(*intents_list[:50], sep='\n')
+    intents_name, all_intents = load_intents()
+    # print(intents_name)
+    # print(all_intents[0].get('title'))
 
     failure_phrases = mdb.load_failure_phrases()
-    print(failure_phrases)
+    # print(failure_phrases)
 
     client.run(TOKEN)

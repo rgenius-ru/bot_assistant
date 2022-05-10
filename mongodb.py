@@ -41,6 +41,15 @@ def print_collections(db):
     print('', 'Список коллекций:', *db.list_collection_names(), sep='\n')
 
 
+def del_all_intents():
+    python_help_db = connect('python_help')
+    intents_collection = python_help_db['intents']
+
+    documents = intents_collection.delete_many({})  # Удаление всех документов
+
+    return documents
+
+
 def get_intents(limit=None):
     python_help_db = connect('python_help')
     intents_collection = python_help_db['intents']
@@ -53,6 +62,16 @@ def get_intents(limit=None):
     return intents
 
 
+def get_intent(title):
+    python_help_db = connect('python_help')
+    intents_collection = python_help_db['intents']
+
+    query = {"title": {"$eq": title}}
+    intent = intents_collection.find_one(query)
+
+    return intent
+
+
 def load_intents_from_file():
     file = open('Intents/intents.txt', 'r', encoding='utf-8')  # Отрытие файла в режиме чтения
     text = file.read()  # Чтение данных из файла
@@ -61,30 +80,72 @@ def load_intents_from_file():
     text = text.split('\n')  # Разделение текста и преобразование его в список строк
 
     intents = {}
-    replica = []
+    replicas = []
     intent = ''
-    start_flag = False
     for string in text:
         if string.startswith('## intent:'):
-            if not start_flag:
-                replica = []
-                index_separator = string.index(':')
-                intent = string[index_separator + 1:]
-                intents.setdefault(intent)
-                start_flag = True
-                continue
-            else:
-                intents.update({intent: replica})
-                start_flag = False
+            if intent:
+                intents.update({intent: replicas})
 
-        if start_flag and string != '' and not string.startswith('# '):
-            replica.append(string)
+            replicas = []
+            index_separator = string.index(':')
+            intent = string[index_separator + 1:]
+            intents.setdefault(intent)
+
+        elif string != '' and not string.startswith('# '):
+            replicas.append(string)
+
+    intents.update({intent: replicas})
 
     return intents
 
 
-def __save_intent(intent_name, replicas):
-    data = {'intent': intent_name, 'questions': replicas}
+def add_replica(replica, answer=None, title='помощь_в_python'):
+    python_help_db = connect('python_help')
+    intents_collection = python_help_db['intents']
+
+    intent = get_intent(title)
+    replicas = intent.get('replicas')
+    answers = intent.get('answers')
+
+    replicas.append(replica)
+    answers.append(answer)
+
+    query = {'title': title}  # Запрос - Что нужно заменить
+    new_values = {'$set': {'replicas':replicas, 'answers': answers}}  # Новое значение - Чем нужно заменить
+    result = intents_collection.update_one(query, new_values)  # Заменить один документ
+
+    print('Добавлено документов в количестве:', result.matched_count)
+
+
+def update_answer(replica, answer, title='помощь_в_python'):
+    python_help_db = connect('python_help')
+    intents_collection = python_help_db['intents']
+
+    intent = get_intent(title)
+    replicas = intent.get('replicas')
+    answers = intent.get('answers')
+
+    # Поиск реплики и замена вопроса
+    if replica not in replicas:
+        print('Реплика не найдена!')
+        return
+
+    index = replicas.index(replica)
+    answers[index] = answer
+
+    query = {'title': title}  # Запрос - Что нужно заменить
+    new_values = {'$set': {'answers': answers}}  # Новое значение - Чем нужно заменить
+    result = intents_collection.update_one(query, new_values)  # Заменить один документ
+
+    print('Заменено документов в количестве:', result.matched_count)
+
+
+def __save_intent(title, replicas, answers=None):
+    if not answers:
+        answers = [None] * len(replicas)
+
+    data = {'title': title, 'replicas': replicas, 'answers': answers}
     print(data)
 
     python_help_db = connect('python_help')
@@ -102,30 +163,37 @@ def __save_intents_from_file():
     # print(len(intents))
 
     data = []
-    for intent_name, replica in intents.items():
-        data.append({'intent': intent_name, 'replica': replica})
+    for title, replicas in intents.items():
+        answers = [None] * len(replicas)
+        data.append({'title': title, 'replicas': replicas, 'answers': answers})
 
     # print(data[:2])
     # print(len(data))
 
     python_help_db = connect('python_help')
     intents_collection = python_help_db['intents']
-    # documents = intents_collection.insert_many(data)
-    #
-    # print()
-    # print('ids: ', *documents.inserted_ids, sep='\n')
-    # print('Количество записанных документов: ', len(documents.inserted_ids))
+    documents = intents_collection.insert_many(data)
+
+    print()
+    print('ids: ', *documents.inserted_ids, sep='\n')
+    print('Количество записанных документов: ', len(documents.inserted_ids))
 
     print_collections(python_help_db)
 
 
 if __name__ == '__main__':
     # print(load_failure_phrases())
+
+    # print('Удалено документов в количестве:', del_all_intents().deleted_count)
+
     # __save_intents_from_file()
+    # __save_intent(title='test_ghfghfgh', replicas=['sdfsdf', 'dddd', 'eee'])
 
-    __save_intent(intent_name='test_delete_3', replicas=[1, 2, 3])
+    add_replica('как найти слово в предложении?', 'index_int = text_str.find(word_str)')
+    # update_answer('как вывести последний элемент списка?', 'print(list_name[:-1])')
+    print(get_intent('помощь_в_python'))
 
-    print()
-    print('Намерения:')
-    some_intents = get_intents()
-    print(*some_intents, sep='\n')
+    # print()
+    # print('Намерения:')
+    # some_intents = get_intents(2)
+    # print(*some_intents, sep='\n')
