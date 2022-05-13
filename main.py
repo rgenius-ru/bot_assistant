@@ -32,7 +32,7 @@ async def on_message(message):
     if message.author.bot:  # message.member.roles.has(BOT_ROLE)
         return
 
-    # if message.author.name != 'rgenius' and message.author.discriminator != '1118':
+    # if message.author.name + '#' + message.author.discriminator != 'rgenius#1118':
     #     return
 
     if message.content == 'raise-exception':
