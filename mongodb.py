@@ -100,52 +100,105 @@ def load_intents_from_file():
     return intents
 
 
-def add_replica(replica, answer=None, title='помощь_в_python'):
+def add_replica(replica, _answer=None, title='помощь_в_python'):
     python_help_db = connect('python_help')
     intents_collection = python_help_db['intents']
 
     intent = get_intent(title)
     replicas = intent.get('replicas')
-    answers = intent.get('answers')
+    _answers = intent.get('answers')
 
     replicas.append(replica)
-    answers.append(answer)
+    _answers.append(_answer)
 
     query = {'title': title}  # Запрос - Что нужно заменить
-    new_values = {'$set': {'replicas': replicas, 'answers': answers}}  # Новое значение - Чем нужно заменить
+    new_values = {'$set': {'replicas': replicas, 'answers': _answers}}  # Новое значение - Чем нужно заменить
     result = intents_collection.update_one(query, new_values)  # Заменить один документ
 
     print('Добавлено документов в количестве:', result.matched_count)
 
+    if result.matched_count == 0:
+        return False
 
-def update_answer(replica, answer, title='помощь_в_python'):
+    return True
+
+
+def update_answer(replica, _answer, title='помощь_в_python'):
     python_help_db = connect('python_help')
     intents_collection = python_help_db['intents']
 
     intent = get_intent(title)
     replicas = intent.get('replicas')
-    answers = intent.get('answers')
+    _answers = intent.get('answers')
 
     # Поиск реплики и замена вопроса
     if replica not in replicas:
         print('Реплика не найдена!')
-        return
+        return False
 
     index = replicas.index(replica)
-    answers[index] = answer
+    _answers[index] = _answer
 
     query = {'title': title}  # Запрос - Что нужно заменить
-    new_values = {'$set': {'answers': answers}}  # Новое значение - Чем нужно заменить
+    new_values = {'$set': {'answers': _answers}}  # Новое значение - Чем нужно заменить
     result = intents_collection.update_one(query, new_values)  # Заменить один документ
 
     print('Заменено документов в количестве:', result.matched_count)
 
+    if result.matched_count == 0:
+        return False
 
-def __save_intent(title, replicas, answers=None):
-    if not answers:
-        answers = [None] * len(replicas)
+    return True
 
-    data = {'title': title, 'replicas': replicas, 'answers': answers}
+
+def delete_question(replica, title='помощь_в_python'):
+    python_help_db = connect('python_help')
+    intents_collection = python_help_db['intents']
+
+    intent = get_intent(title)
+    replicas = intent.get('replicas')
+    _answers = intent.get('answers')
+
+    # Поиск реплики
+    if replica not in replicas:
+        print(f'Реплика "{replica}" не найдена!')
+        return
+
+    index = replicas.index(replica)
+
+    replicas.remove(replica)
+
+    _answer = _answers[index]
+    _answers.remove(_answer)
+
+    # print(replicas)
+    # print(_answers)
+
+    query = {'title': title}  # Запрос - Что нужно заменить
+
+    new_values = {'$set': {'replicas': replicas, 'answers': _answers}}  # Новое значение - Чем нужно заменить
+    result = intents_collection.update_one(query, new_values)  # Заменить один документ
+
+    print('Удалено документов в количестве:', result.matched_count)
+
+    if result.matched_count == 0:
+        return False
+
+    return True
+
+
+def get_all_question(title='помощь_в_python'):
+    intent = get_intent(title)
+    _questions = intent.get('replicas')
+
+    return _questions
+
+
+def __save_intent(title, replicas, _answers=None):
+    if not _answers:
+        _answers = [None] * len(replicas)
+
+    data = {'title': title, 'replicas': replicas, 'answers': _answers}
     print(data)
 
     python_help_db = connect('python_help')
@@ -191,7 +244,16 @@ if __name__ == '__main__':
 
     # add_replica('как найти слово в предложении?', 'index_int = text_str.find(word_str)')
     # update_answer('как вывести последний элемент списка?', 'print(list_name[:-1])')
-    print(get_intent('помощь_в_python'))
+    # delete_question('как найти слово в предложении?')
+    # print(get_intent('помощь_в_python'))
+
+    questions = get_intent('помощь_в_python').get('replicas')
+    answers = get_intent('помощь_в_python').get('answers')
+
+    for question, answer in zip(questions, answers):
+        print(question)
+        print(answer)
+        print()
 
     # print()
     # print('Намерения:')

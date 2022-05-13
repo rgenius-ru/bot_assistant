@@ -1,10 +1,9 @@
 import os
 from sys import exit
-import random
-import discord
 from dotenv import load_dotenv
-from nltk import edit_distance
+import discord
 import mongodb as mdb
+import dialogue as dlg
 
 
 client = discord.Client()
@@ -39,223 +38,132 @@ async def on_message(message):
     if message.content == 'raise-exception':
         raise discord.DiscordException
 
-    response = start_dialogue(message.content)
+    if message.content == '':
+        return
+
+    response = on_command(message.content)
+
+    if not response:
+        response = dlg.start_dialogue(message.content)
+
     await message.channel.send(response)
 
 
-def clear_phrases(replica):
-    replica = replica.lower()
-    alphabet_russ = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
-    alphabet_eng = 'abcdefghijklmnopqrstuvwxyz'
-    some_symbols = ' -'
+def on_command(replica):
+    start_symbol = '!'
 
-    replica_copy = ''
-    for symbol in replica:
-        if symbol in (alphabet_russ + alphabet_eng + some_symbols):
-            replica_copy += symbol  # replica_copy = replica_copy + symbol
+    help_commands = [
+        'все команды',
+        'команды',
+        'что ты умеешь',
+        'справка',
+        'help',
+        'помощь'
+    ]
 
-    replica = replica_copy
-    return replica
+    commands = {
+        'добавь вопрос':    on_command_add_question,  # !добавь вопрос как возвести в квадрат? number ** 2
+        '+вопрос':          on_command_add_question,
+        'обнови вопрос':    on_command_update_question,  # !обнови вопрос как вычислить корень? math.sqrt(number)
+        'удали вопрос':     on_command_delete_question,  # !удали вопрос как вычислить корень?
+        '-вопрос':          on_command_delete_question,
+        'все вопросы':      on_command_all_questions,
+    }
 
+    for command in help_commands:
+        command = start_symbol + command
+        if replica.startswith(command):
+            return on_command_all_commands(commands.keys())
 
-def is_similar_to(text1, text2, percent=0.35):  # Похожая на ...
-    # Добрый вечер
-    # Дбрый вечер
-    # Добрый вече
+    founded = None
+    for command, function in commands.items():
+        command = start_symbol + command
+        if replica.startswith(command):
+            founded = command, function
+            break
 
-    # Добрый вечер
+    if not founded:
+        return None
 
-    # Добрый дечер
-    # Добрый денер
-    # Добрый деньр
-    # Добрый день
+    command, function = founded
 
-    # Добрый день
-
-    # Расстояние = 4
-    # Изменение в проценнтах = 4/26 (= 0.15) Какой хороший Добрый день
-    # Изменение в проценнтах = 4/26 (= 0.33) Добрый день
-    distance = edit_distance(text1, text2)
-    difference = distance / len(text1)
-    # print(distance, difference)
-
-    if difference < percent:
-        return True
-    return False
-
-
-def get_intent(message):
-    for intent_dict in all_intents:
-        title = intent_dict.get('title')
-        replicas = intent_dict.get('replicas')
-
-        for replica in replicas:
-            if is_similar_to(message, clear_phrases(replica)):
-                return title
-
-    return None
-
-
-def random_failure_phrase():
-    return random.choice(failure_phrases)
-
-
-def get_answer_from_intent(intent, replica):
-    """
-    Сообщение боту: Чем знаменит Борис Ельцин?
-    Ответ бота: Он бывший президент России
-
-    Сообщение боту: где живут пингвины?
-    Ответ бота: на Антарктиде
-    """
-
-    # answer = random.choice(response)
-    answer = None
-    if intent == 'wiki':
-        if is_similar_to('Чем знаменит Борис Ельцин?', replica):
-            answer = 'Он бывший президент России'
-        elif is_similar_to('где живут пингвины?', replica):
-            answer = 'на Антарктиде'
-    elif intent == 'про_кошек':
-        if is_similar_to('Как там мой кошак?', replica):
-            answer = 'Сбежал куда-то вчера с пятого этажа'
-        elif is_similar_to('Что известно о кошках?', replica):
-            answer = 'что они усатые'
-
-    elif intent == 'расскажи_прогноз_погоды':
-        # days = ['сегодня', 'завтра', 'послезавтра', 'понедельниц', 'вторник', 'среда']
-        # phenomenons = ['дождь', 'снег', 'облачность', 'гололедица']
-        phrase = 'Завтра дождь будет?'
-        # words = phrase.split()
-
-        # какая погода будет в 14 часов 14 числа?
-
-        # Цикл
-        # day = 'завтра'
-        # Цикл
-        # phenomenon = 'дождь'
-
-        if is_similar_to(phrase, replica):
-            print('Спрашивает про сегодня')
-
+    text = replica.replace(command, '').lstrip()
+    if '?' in text:
+        question_end = text.index('?') + 1
+        question = text[:question_end]
     else:
-        print('Насколько я понял, твоё намерение: ', intent)
+        question = text
 
-    return answer
+    answer = text.replace(question, '').lstrip()
+    result = function(question, answer)
 
-
-def load_intents():
-    """
-    # Загрузить намерения из БД  в память
-    """
-
-    mdb_intents = mdb.get_intents()
-
-    _all_intents = []
-    _intents_name = []
-    for intent in mdb_intents:
-        name = intent.get('title')
-        _all_intents.append(intent)
-        _intents_name.append(name)
-
-    return _intents_name, _all_intents
+    return result
 
 
-def generate_answer(intent_title, message, difference_threshold=10):
-    # сгенерировать ответ
-    answer = None
+def on_command_all_commands(commands):
+    text = '**Список команд:**\n'
 
-    if intent_title == 'помощь_в_python':
-        # Вывести коэффициенты похожести (дистанции Левенштейна)
-        questions = []
-        distances = []
-        replicas = []
-        answers = []
+    for command in commands:
+        text += '!' + command + '\n'
 
-        for intent_dict in all_intents:
-            title = intent_dict.get('title')
-            if title == intent_title:
-                replicas = intent_dict.get('replicas')
-                answers = intent_dict.get('answers')
-                break
-
-        for replica in replicas:
-            distance = edit_distance(replica, message)
-            if distance < difference_threshold:
-                questions.append(replica)
-                distances.append(distance)
-                print(distance, '\t', replica)
-
-        print(distances)
-        print(questions)
-
-        index = distances.index(min(distances))
-        question = questions[index]
-        index_answer = replicas.index(question)
-
-        if answers[index_answer] is None:
-            return None
-
-        answer = '**Похожий вопрос:** ' + question + '\n'
-        answer += '**Ответ:** ' + answers[index_answer]
-
-    return answer
+    return text
 
 
-def start_dialogue(replica):
-    """
-    # Общий план диалогов:
+def on_command_add_question(question, answer):
+    if not mdb.add_replica(question, answer):
+        return 'Ошибка. Не могу добавить вопрос и ответ.'
 
-    # NLU (Natural Language Understanding):
-    # + Предварительная обработка реплики (очистка, регистр букв и т.п.)
-    # + Относим реплику к какому-либо классу намерений
-    # + Извлекаем параметры реплики (извлечение сущностей и объектов)
+    dlg.intents_name, dlg.all_intents = dlg.load_intents()
 
-    # NLG (Natural Language Generation):
-    # + Выдать заготовленный ответ основываясь на намерении
-    # - Если заготовленного ответа нет, то сгенерировать ответ автоматически и выдать его
-    # + Если не удалось сгенерировать ответ, то выдать фразу: "Я непонял"; "Перефразируй" и т.п.
+    return 'Вопрос и ответ добавлены успешно.'
 
-    :param replica:
-    :return: answer
-    """
 
-    command = '!добавь_вопрос '
-    if replica.startswith(command):  # !добавь_вопрос как возвести в квадрат? number ** 2
-        start = len(command)
-        stop = replica.index('?')
-        question = replica[start:stop + 1]
-        answer = replica[stop + 2:]
+def on_command_update_question(question, answer):
+    if not mdb.update_answer(question, answer):
+        return 'Ошибка. Не могу изменить вопрос.'
 
-        mdb.add_replica(question, answer)
+    dlg.intents_name, dlg.all_intents = dlg.load_intents()
 
-        global intents_name, all_intents
-        intents_name, all_intents = load_intents()
+    return 'Вопрос изменён успешно.'
 
-        return 'Вопрос и ответ добавлены успешно.'
 
-    answer = ''
-    #  Предварительная обработка реплики (очистка, регистр букв и т.п.)
-    replica = clear_phrases(replica)
+def on_command_delete_question(question, answer):
+    if not mdb.delete_question(question):
+        return 'Ошибка. Не могу удалить вопрос.'
 
-    #  Относим реплику к какому-либо классу намерений
-    intent = get_intent(replica)
-    print(intent)
+    dlg.intents_name, dlg.all_intents = dlg.load_intents()
 
-    #  Выдать заготовленный ответ основываясь на намерении
-    if intent:
-        answer = get_answer_from_intent(intent, replica)
+    return 'Вопрос удалён успешно.'
 
-    # Если заготовленного ответа нет, то сгенерировать ответ автоматически и выдать его
-    # print('-------', answer)
-    if not answer:
-        answer = generate_answer(intent, replica)
 
-    #  Если не удалось сгенерировать ответ, то выдать фразу: "Я непонял"; "Перефразируй" и т.п.
-    if not answer:
-        answer = random_failure_phrase()
+def on_command_all_questions(question, answer):
+    questions = mdb.get_all_question()
+    count = len(questions)
 
-    return answer
+    questions = shorten_list(questions)
+
+    text = ''
+    index = 1
+    for question in questions:
+        if question == '...':
+            number = ''
+            index = count - 5
+        else:
+            number = str(index) + '\t'
+
+        text += number + question + '\n'
+        index += 1
+
+    text = '**Вопросы которые у меня записаны:**\n' + text
+
+    return text
+
+
+def shorten_list(source_list):
+    if len(source_list) > 10:
+        return source_list[:5] + ['...'] + source_list[-5:]
+
+    return source_list
 
 
 # Описание сновного алгоритма находится в функции start_dialogue()
@@ -266,12 +174,5 @@ if __name__ == '__main__':
     # print(TOKEN)
     if not TOKEN:
         exit('TOKEN = None')
-
-    intents_name, all_intents = load_intents()
-    # print(intents_name)
-    # print(all_intents[0].get('title'))
-
-    failure_phrases = mdb.load_failure_phrases()
-    # print(failure_phrases)
 
     client.run(TOKEN)
