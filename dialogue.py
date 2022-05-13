@@ -204,6 +204,8 @@ def start_dialogue(replica):
     return answer
 
 
+# Описание сновного алгоритма находится в функции start_dialogue()
+
 intents_name, all_intents = load_intents()
 # print(intents_name)
 # print(all_intents[0].get('title'))
