@@ -26,19 +26,7 @@ async def on_member_join(member):
 async def on_message(message):
     print(message.author)
 
-    if message.author == client.user:
-        return
-
-    if message.author.bot:  # message.member.roles.has(BOT_ROLE)
-        return
-
-    # if message.author.name + '#' + message.author.discriminator != 'rgenius#1118':
-    #     return
-
-    if message.content == 'raise-exception':
-        raise discord.DiscordException
-
-    if message.content == '':
+    if ignore(message):
         return
 
     response = comm.on_command(message.content)
@@ -47,6 +35,28 @@ async def on_message(message):
         response = dlg.start_dialogue(message.content)
 
     await message.channel.send(response)
+
+
+def ignore(message):
+    if message.author == client.user:  # Если автор сообщения этот бот
+        return True
+
+    # if message.member.roles.has(BOT_ROLE):
+    if message.author.bot:  # Если автор сообщения любой бот
+        return True
+
+    name = message.author.name
+    discriminator = message.author.discriminator
+    if name + '#' + discriminator != 'rgenius#1118':  # Если автор сообщения не мой никнейм
+        return True
+
+    if message.content == 'raise-exception':
+        raise discord.DiscordException
+
+    if message.content == '':
+        return True
+
+    return False
 
 
 if __name__ == '__main__':
