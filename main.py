@@ -50,11 +50,11 @@ def ignore(message):
     if name + '#' + discriminator != 'rgenius#1118':  # Если автор сообщения не мой никнейм
         return True
 
-    if message.content == 'raise-exception':
-        raise discord.DiscordException
-
-    if message.content == '':
+    if message.content == '':  # Если сообщение пустое
         return True
+
+    if message.content == 'raise-exception':  # Если произошла ошибка
+        raise discord.DiscordException
 
     return False
 
