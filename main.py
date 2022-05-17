@@ -29,12 +29,12 @@ async def on_message(message):
     if ignore(message):
         return
 
-    response = comm.on_command(message.content)
+    response = comm.on_command(message.content)  # Проверка на команду, и ответ на неё
 
-    if not response:
-        response = dlg.start_dialogue(message.content)
+    if not response:  # Если ответа нет
+        response = dlg.start_dialogue(message.content)  # Запуск диалога
 
-    await message.channel.send(response)
+    await message.channel.send(response)  # Отправка ответа в чат
 
 
 def ignore(message):
