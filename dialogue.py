@@ -35,6 +35,9 @@ def is_similar_to(text1, text2, percent=0.35):  # Похожая на ...
     # Расстояние = 4
     # Изменение в проценнтах = 4/26 (= 0.15) Какой хороший Добрый день
     # Изменение в проценнтах = 4/26 (= 0.33) Добрый день
+    if text1 == '' and text2 == '':
+        return False
+
     distance = edit_distance(text1, text2)
     difference = distance / len(text1)
     # print(distance, difference)

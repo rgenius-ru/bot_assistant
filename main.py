@@ -45,10 +45,10 @@ def ignore(message):
     if message.author.bot:  # Если автор сообщения любой бот
         return True
 
-    name = message.author.name
-    discriminator = message.author.discriminator
-    if name + '#' + discriminator != 'rgenius#1118':  # Если автор сообщения не мой никнейм
-        return True
+    # name = message.author.name
+    # discriminator = message.author.discriminator
+    # if name + '#' + discriminator != 'rgenius#1118':  # Если автор сообщения не мой никнейм
+    #     return True
 
     if message.content == '':  # Если сообщение пустое
         return True
