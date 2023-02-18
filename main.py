@@ -6,7 +6,13 @@ import dialogue as dlg
 import commands as comm
 
 
-client = discord.Client()
+# UPD 18.02.2023
+intents = discord.Intents.default()
+intents.message_content = True
+client = discord.Client(intents=intents)
+
+
+# client = discord.Client()
 
 
 @client.event
